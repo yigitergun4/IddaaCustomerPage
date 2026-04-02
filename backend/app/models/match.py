@@ -12,22 +12,18 @@ class Match(Base):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     fixture_id: Mapped[int] = mapped_column(Integer, unique=True, nullable=False, index=True)
     home_team: Mapped[str] = mapped_column(String(100), nullable=False)
-    home_team_logo: Mapped[str | None] = mapped_column(String(500), nullable=True)
     away_team: Mapped[str] = mapped_column(String(100), nullable=False)
-    away_team_logo: Mapped[str | None] = mapped_column(String(500), nullable=True)
-    start_time: Mapped[datetime] = mapped_column(DateTime, nullable=False, index=True)
-    league_id: Mapped[int] = mapped_column(Integer, nullable=False)
-    league_name: Mapped[str | None] = mapped_column(String(100), nullable=True)
-    venue: Mapped[str | None] = mapped_column(String(200), nullable=True)
-    status: Mapped[str] = mapped_column(String(20), default="NS")  # NS=Not Started, FT=Full Time, etc.
     home_score: Mapped[int | None] = mapped_column(Integer, nullable=True)
     away_score: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    start_time: Mapped[datetime] = mapped_column(DateTime, nullable=False, index=True)
+    league_id: Mapped[int] = mapped_column(Integer, nullable=False)
+    
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
     # Relationships
-    odds = relationship("Odds", back_populates="match", uselist=False, lazy="joined")
-    stats = relationship("Stats", back_populates="match", uselist=False, lazy="joined")
+    odds = relationship("Odds", back_populates="match", uselist=False, lazy="joined", cascade="all, delete-orphan")
+    stats = relationship("Stats", back_populates="match", uselist=False, lazy="joined", cascade="all, delete-orphan")
     
     def __repr__(self) -> str:
         return f"<Match(id={self.id}, {self.home_team} vs {self.away_team})>"

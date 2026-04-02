@@ -13,25 +13,21 @@ from app.models.user import User
 from app.models.dealer import DealerWhitelist
 from app.schemas.user import (
     UserResponse,
-    VerifyRequest,
-    VerifyResponse,
     Token,
     PhoneLoginRequest,
     SessionCheckResponse,
 )
-from app.services.verification import verify_member_id
 
 router = APIRouter(prefix="/api/users", tags=["users"])
 settings = get_settings()
 
-# OAuth2 scheme
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/users/login")
 
 
 def create_access_token(data: dict, expires_delta: timedelta | None = None) -> str:
     """Create JWT token with session ID embedded."""
     to_encode = data.copy()
-    expire = datetime.utcnow() + (expires_delta or timedelta(minutes=15))
+    expire = datetime.utcnow() + (expires_delta or timedelta(hours=24))
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, settings.secret_key, algorithm=settings.algorithm)
 
@@ -40,10 +36,7 @@ async def get_current_user(
     token: Annotated[str, Depends(oauth2_scheme)],
     db: AsyncSession = Depends(get_db)
 ) -> User:
-    """
-    Dependency to get current authenticated user.
-    Also validates that the token matches the active session in DB.
-    """
+    """Dependency to get current authenticated user."""
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Geçersiz kimlik bilgileri",
@@ -60,29 +53,20 @@ async def get_current_user(
         payload = jwt.decode(token, settings.secret_key, algorithms=[settings.algorithm])
         user_id_str: str = payload.get("sub")
         session_id: str = payload.get("session_id")
-        print(f"DEBUG: JWT decoded - user_id={user_id_str}, session_id={session_id}")
         if user_id_str is None or session_id is None:
-            print("DEBUG: Missing user_id or session_id in JWT")
             raise credentials_exception
-        # Convert user_id from string to int
         user_id = int(user_id_str)
-    except (JWTError, ValueError) as e:
-        print(f"DEBUG: JWTError/ValueError - {e}")
+    except (JWTError, ValueError):
         raise credentials_exception
     
-    # Get user from DB
     stmt = select(User).where(User.id == user_id)
     result = await db.execute(stmt)
     user = result.scalar_one_or_none()
     
     if user is None:
-        print(f"DEBUG: User not found for id={user_id}")
         raise credentials_exception
     
-    # Check if session is still valid (matches active session in DB)
-    print(f"DEBUG: Checking session - token={session_id}, db={user.active_session_token}")
     if user.active_session_token != session_id:
-        print("DEBUG: Session mismatch - session was terminated")
         raise session_terminated_exception
     
     return user
@@ -94,12 +78,11 @@ async def login_with_phone(
     db: AsyncSession = Depends(get_db)
 ):
     """
-    Login with phone number only.
-    Phone must exist in dealer_whitelist (from iddaa.portal).
-    Previous sessions will be terminated.
+    Login with Phone only. 
+    VIP Gate: Phone must exist in DealerWhitelist.
     """
-    # Normalize phone number (remove spaces, dashes)
-    phone = login_data.phone.replace(" ", "").replace("-", "").replace("(", "").replace(")", "")
+    import re
+    phone = re.sub(r'\D', '', login_data.phone)
     
     # Check if phone exists in dealer whitelist
     stmt = select(DealerWhitelist).where(DealerWhitelist.phone == phone)
@@ -109,37 +92,28 @@ async def login_with_phone(
     if not dealer:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Bu telefon numarası sistemde kayıtlı değil. Lütfen bayinize başvurun.",
+            detail="Bu platform sadece VIP bayimize kayıtlı üyelere özeldir. Lütfen bayinizle iletişime geçin.",
         )
     
-    # Find or create user for this phone
+    # Find or create user session tracking for this phone
     stmt = select(User).where(User.phone == phone)
     result = await db.execute(stmt)
     user = result.scalar_one_or_none()
     
     if not user:
-        # Create user automatically
-        user = User(
-            phone=phone,
-            member_id=dealer.member_id,
-            is_verified=True,  # Auto-verified since phone is in whitelist
-        )
+        user = User(phone=phone)
         db.add(user)
         await db.flush()
     
-    # Generate unique session ID
     session_id = str(uuid.uuid4())
-    
-    # Store session ID in user record (this invalidates old sessions)
     user.active_session_token = session_id
     user.updated_at = datetime.utcnow()
     await db.commit()
     await db.refresh(user)
     
-    # Create token with session ID (sub must be string per JWT spec)
     access_token = create_access_token(
         data={"sub": str(user.id), "session_id": session_id},
-        expires_delta=timedelta(days=7)  # Longer expiry for convenience
+        expires_delta=timedelta(days=7)
     )
     
     return Token(access_token=access_token)
@@ -150,10 +124,7 @@ async def check_session(
     token: Annotated[str, Depends(oauth2_scheme)],
     db: AsyncSession = Depends(get_db)
 ):
-    """
-    Check if current session is still valid.
-    Frontend should poll this endpoint periodically.
-    """
+    """Check if current session is still valid."""
     try:
         payload = jwt.decode(token, settings.secret_key, algorithms=[settings.algorithm])
         user_id: int = payload.get("sub")
@@ -166,14 +137,8 @@ async def check_session(
         result = await db.execute(stmt)
         user = result.scalar_one_or_none()
         
-        if not user:
-            return SessionCheckResponse(valid=False, message="Kullanıcı bulunamadı")
-        
-        if user.active_session_token != session_id:
-            return SessionCheckResponse(
-                valid=False, 
-                message="Oturumunuz başka bir cihazdan yapılan giriş nedeniyle sonlandırıldı."
-            )
+        if not user or user.active_session_token != session_id:
+            return SessionCheckResponse(valid=False, message="Oturumunuz sonlandırıldı")
         
         return SessionCheckResponse(valid=True)
         
@@ -197,29 +162,3 @@ async def logout(
     current_user.updated_at = datetime.utcnow()
     await db.commit()
     return {"message": "Başarıyla çıkış yapıldı"}
-
-
-@router.post("/verify", response_model=VerifyResponse)
-async def verify_user(
-    request: VerifyRequest,
-    current_user: Annotated[User, Depends(get_current_user)],
-    db: AsyncSession = Depends(get_db)
-):
-    """
-    Verify user's Iddaa Member ID against dealer whitelist.
-    
-    This is the "Paywall" endpoint:
-    - If member_id exists in DealerWhitelist: Grant access to premium content
-    - If not: Return Turkish error message
-    """
-    result = await verify_member_id(
-        user_id=current_user.id,
-        member_id=request.member_id,
-        db=db
-    )
-    
-    return VerifyResponse(
-        success=result.success,
-        message=result.message,
-        is_verified=result.is_verified
-    )

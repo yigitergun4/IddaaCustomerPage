@@ -1,114 +1,65 @@
-"use client";
+import { Clock, TrendingUp } from "lucide-react";
+import { MatchCardProps } from "@/types/components";
+import { formatTime, formatOdd } from "@/lib/utils";
 
-import Image from "next/image";
-import { Clock, TrendingUp, Lock } from "lucide-react";
-import { Match } from "@/lib/api";
-import { formatTime, formatOdd, cn } from "@/lib/utils";
-
-interface MatchCardProps {
-  match: Match;
-  showPremium?: boolean;
-  isVerified?: boolean;
-  onUnlockClick?: () => void;
-}
-
-export function MatchCard({ match, showPremium = false, isVerified = false, onUnlockClick }: MatchCardProps) {
-  const isLive = match.status === "1H" || match.status === "2H" || match.status === "HT";
-  const isFinished = match.status === "FT";
-  const hasStats = match.stats && (match.stats.home_xg !== null || match.stats.prediction_score !== null);
+export function MatchCard({ match }: MatchCardProps) {
+  const isStarted: boolean = match.home_score !== null && match.away_score !== null;
 
   return (
-    <div className="card hover:border-[var(--primary)]/30 group">
+    <div className="card border-[var(--primary)]/20 hover:border-[var(--primary)]/50 group bg-black/40 relative overflow-hidden">
+      <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--primary)]/5 rounded-full blur-2xl -mr-16 -mt-16 transition-all group-hover:bg-[var(--primary)]/10" />
+
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-4 relative z-10">
         <div className="flex items-center gap-2">
           <Clock className="w-4 h-4 text-[var(--text-muted)]" />
-          <span className="text-sm text-[var(--text-muted)]" suppressHydrationWarning>
+          <span className="text-sm font-medium text-[var(--primary)]" suppressHydrationWarning>
             {formatTime(match.start_time)}
           </span>
         </div>
-        
-        {isLive && (
-          <span className="badge badge-live animate-pulse">
-            <span className="w-2 h-2 bg-current rounded-full mr-1.5"></span>
-            CANLI
-          </span>
-        )}
-        
-        {!isLive && !isFinished && hasStats && (
-          <span className="badge badge-primary">
-            <TrendingUp className="w-3 h-3 mr-1" />
-            Akıllı Analiz
-          </span>
-        )}
       </div>
 
       {/* Teams */}
-      <div className="flex items-center justify-between mb-6">
-        {/* Home Team */}
-        <div className="flex-1 flex flex-col items-center text-center">
-          {match.home_team_logo && (
-            <Image
-              src={match.home_team_logo}
-              alt={match.home_team}
-              width={48}
-              height={48}
-              className="mb-2"
-            />
-          )}
-          <span className="font-semibold text-sm">{match.home_team}</span>
+      <div className="flex items-center justify-between mb-6 relative z-10">
+        <div className="flex-1 text-center">
+          <span className="font-bold text-lg">{match.home_team}</span>
         </div>
 
-        {/* Score / VS */}
         <div className="px-4">
-          {isLive || isFinished ? (
+          {isStarted ? (
             <div className="text-2xl font-bold">
-              <span className={isLive ? "text-[var(--primary)]" : ""}>
-                {match.home_score ?? 0}
-              </span>
+              <span className="text-[var(--primary)]">{match.home_score}</span>
               <span className="text-[var(--text-muted)] mx-2">-</span>
-              <span className={isLive ? "text-[var(--primary)]" : ""}>
-                {match.away_score ?? 0}
-              </span>
+              <span className="text-[var(--primary)]">{match.away_score}</span>
             </div>
           ) : (
-            <span className="text-[var(--text-muted)] font-medium">VS</span>
+            <span className="text-[var(--text-muted)] tracking-widest text-sm font-bold">VS</span>
           )}
         </div>
 
-        {/* Away Team */}
-        <div className="flex-1 flex flex-col items-center text-center">
-          {match.away_team_logo && (
-            <Image
-              src={match.away_team_logo}
-              alt={match.away_team}
-              width={48}
-              height={48}
-              className="mb-2"
-            />
-          )}
-          <span className="font-semibold text-sm">{match.away_team}</span>
+        <div className="flex-1 text-center">
+          <span className="font-bold text-lg">{match.away_team}</span>
         </div>
       </div>
 
       {/* Odds */}
       {match.odds && (
-        <div className="grid grid-cols-3 gap-2 mb-4">
-          <div className="bg-[var(--secondary)] rounded-lg p-3 text-center">
-            <div className="text-xs text-[var(--text-muted)] mb-1">1</div>
-            <div className="font-bold text-[var(--primary)]">
+        <div className="grid grid-cols-3 gap-3 mb-6 relative z-10">
+          <div className="bg-[var(--background)] border border-[var(--card-border)] rounded-lg p-3 text-center">
+            <div className="text-xs text-[var(--text-muted)] mb-1 font-medium">1</div>
+            <div className="font-bold text-[var(--primary)] text-lg">
               {formatOdd(match.odds.home_odd)}
             </div>
           </div>
-          <div className="bg-[var(--secondary)] rounded-lg p-3 text-center">
-            <div className="text-xs text-[var(--text-muted)] mb-1">X</div>
-            <div className="font-bold text-[var(--text-muted)]">
+          <div className="bg-[var(--background)] border border-[var(--card-border)] rounded-lg p-3 text-center">
+            <div className="text-xs text-[var(--text-muted)] mb-1 font-medium">X</div>
+            <div className="font-bold text-white text-lg">
               {formatOdd(match.odds.draw_odd)}
             </div>
           </div>
-          <div className="bg-[var(--secondary)] rounded-lg p-3 text-center">
-            <div className="text-xs text-[var(--text-muted)] mb-1">2</div>
-            <div className="font-bold text-[var(--primary)]">
+          <div className="bg-[var(--background)] border border-[var(--card-border)] rounded-lg p-3 text-center">
+            <div className="text-xs text-[var(--text-muted)] mb-1 font-medium">2</div>
+            <div className="font-bold text-[var(--primary)] text-lg">
               {formatOdd(match.odds.away_odd)}
             </div>
           </div>
@@ -116,62 +67,31 @@ export function MatchCard({ match, showPremium = false, isVerified = false, onUn
       )}
 
       {/* Premium Stats Section */}
-      <div className="relative">
-        {showPremium && isVerified && match.stats ? (
-          // Show actual premium data
-          <div className="bg-[var(--primary-muted)] rounded-lg p-4">
+      {match.stats && (
+        <div className="relative z-10 mt-auto">
+          <div className="bg-gradient-to-r from-[var(--primary)]/10 to-transparent border border-[var(--primary)]/20 rounded-lg p-4">
             <div className="flex items-center gap-2 mb-3">
               <TrendingUp className="w-4 h-4 text-[var(--primary)]" />
-              <span className="text-sm font-semibold text-[var(--primary)]">AI Tahmin</span>
+              <span className="text-sm font-bold text-[var(--primary)] tracking-wide uppercase">Yapay Zeka Analizi</span>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <div className="text-xs text-[var(--text-muted)] mb-1">xG (Beklenen Gol)</div>
-                <div className="font-bold">
-                  {match.stats.home_xg?.toFixed(2) ?? "-"} - {match.stats.away_xg?.toFixed(2) ?? "-"}
+                <div className="text-[10px] uppercase tracking-wider text-[var(--text-muted)] mb-1">Beklenen Gol (xG)</div>
+                <div className="font-bold text-lg">
+                  {match.stats.home_xg?.toFixed(2) ?? "-"} <span className="text-[var(--text-muted)] text-sm mx-1">/</span> {match.stats.away_xg?.toFixed(2) ?? "-"}
                 </div>
               </div>
               <div>
-                <div className="text-xs text-[var(--text-muted)] mb-1">Güven Skoru</div>
-                <div className="font-bold text-[var(--primary)]">
-                  {match.stats.prediction_score ? `${match.stats.prediction_score}%` : "-"}
+                <div className="text-[10px] uppercase tracking-wider text-[var(--text-muted)] mb-1">AI Güven Skoru</div>
+                <div className="font-bold text-[var(--primary)] text-lg flex items-baseline gap-1">
+                  {match.stats.ai_prediction_score?.toFixed(1) ?? "-"}
+                  <span className="text-xs">%</span>
                 </div>
               </div>
             </div>
           </div>
-        ) : (
-          // Show blurred paywall
-          <div className="relative">
-            <div className="blur-paywall bg-[var(--primary-muted)] rounded-lg p-4">
-              <div className="flex items-center gap-2 mb-3">
-                <TrendingUp className="w-4 h-4" />
-                <span className="text-sm font-semibold">AI Tahmin</span>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <div className="text-xs mb-1">xG (Beklenen Gol)</div>
-                  <div className="font-bold">2.45 - 1.23</div>
-                </div>
-                <div>
-                  <div className="text-xs mb-1">Güven Skoru</div>
-                  <div className="font-bold">87%</div>
-                </div>
-              </div>
-            </div>
-            
-            {/* Unlock overlay */}
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <button
-                onClick={onUnlockClick}
-                className="btn-primary flex items-center gap-2 animate-pulse-glow"
-              >
-                <Lock className="w-4 h-4" />
-                Bayi ID ile Aç
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

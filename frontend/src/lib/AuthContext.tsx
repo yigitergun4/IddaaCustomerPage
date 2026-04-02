@@ -1,32 +1,23 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
-import { api, User } from "./api";
+import { api } from "./api";
+import { AuthContextType, User } from "../types/lib";
 
-interface AuthContextType {
-    user: User | null;
-    token: string | null;
-    isLoading: boolean;
-    isSessionTerminated: boolean;
-    login: (phone: string) => Promise<void>;
-    logout: () => Promise<void>;
-    clearSessionTerminated: () => void;
-}
+const AuthContext: React.Context<AuthContextType | undefined> = createContext<AuthContextType | undefined>(undefined);
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-const TOKEN_KEY = "auth_token";
-const SESSION_CHECK_INTERVAL = 30000; // 30 seconds
+const TOKEN_KEY: string = "auth_token";
+const SESSION_CHECK_INTERVAL: number = 30000; // 30 seconds
 
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [token, setToken] = useState<string | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
-    const [isSessionTerminated, setIsSessionTerminated] = useState(false);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [isSessionTerminated, setIsSessionTerminated] = useState<boolean>(false);
 
     // Load token from localStorage on mount
     useEffect(() => {
-        const storedToken = localStorage.getItem(TOKEN_KEY);
+        const storedToken: string | null = localStorage.getItem(TOKEN_KEY);
         if (storedToken) {
             setToken(storedToken);
             fetchUser(storedToken);
@@ -39,7 +30,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     useEffect(() => {
         if (!token) return;
 
-        const checkSession = async () => {
+        const checkSession: () => Promise<void> = async () => {
             try {
                 const response = await api.checkSession(token);
                 if (!response.valid) {
@@ -58,19 +49,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         };
 
         const intervalId = setInterval(checkSession, SESSION_CHECK_INTERVAL);
-        
+
         return () => clearInterval(intervalId);
     }, [token]);
 
-    const fetchUser = async (authToken: string, retryCount = 0) => {
+    const fetchUser: (authToken: string, retryCount?: number) => Promise<void> = async (authToken: string, retryCount = 0) => {
         try {
-            const userData = await api.getMe(authToken);
+            const userData: User = await api.getMe(authToken);
             setUser(userData);
             setIsLoading(false);
         } catch (error: unknown) {
             // Only clear token on explicit auth failures, not network errors
-            const message = error instanceof Error ? error.message : "";
-            
+            const message: string = error instanceof Error ? error.message : "";
+
             if (message.includes("Geçersiz") || message.includes("401") || message.includes("Oturum")) {
                 // Auth failed - clear token
                 localStorage.removeItem(TOKEN_KEY);
@@ -86,18 +77,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
     };
 
-    const login = useCallback(async (phone: string) => {
+    const login: (phone: string) => Promise<void> = useCallback(async (phone: string) => {
         const response = await api.loginWithPhone(phone);
         const newToken = response.access_token;
-        
+
         localStorage.setItem(TOKEN_KEY, newToken);
         setToken(newToken);
         setIsSessionTerminated(false);
-        
+
         await fetchUser(newToken);
     }, []);
 
-    const logout = useCallback(async () => {
+    const logout: () => Promise<void> = useCallback(async () => {
         if (token) {
             try {
                 await api.logout(token);
@@ -105,7 +96,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 // Ignore logout errors
             }
         }
-        
+
         localStorage.removeItem(TOKEN_KEY);
         setToken(null);
         setUser(null);
@@ -116,13 +107,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }, []);
 
     return (
-        <AuthContext.Provider 
-            value={{ 
-                user, 
-                token, 
-                isLoading, 
+        <AuthContext.Provider
+            value={{
+                user,
+                token,
+                isLoading,
                 isSessionTerminated,
-                login, 
+                login,
                 logout,
                 clearSessionTerminated
             }}

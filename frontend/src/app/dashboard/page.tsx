@@ -1,197 +1,111 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
-import { Calendar, Home, Shield, BarChart3, Menu, X, Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useAuth } from "@/lib/AuthContext";
+import { api } from "@/lib/api";
 import { MatchCard } from "@/components/MatchCard";
-import { VerificationModal } from "@/components/VerificationModal";
-import { Match, api } from "@/lib/api";
+import { Match } from "@/types/lib";
+import { Shield, LogOut, Loader2, Calendar } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function Dashboard() {
-  const [showModal, setShowModal] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isVerified] = useState(false); // This would come from auth context
-  const [matches, setMatches] = useState<Match[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+    const { user, token, logout, isLoading: authLoading } = useAuth();
+    const [matches, setMatches] = useState<Match[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string>("");
+    const router = useRouter();
 
-  useEffect(() => {
-    async function fetchMatches() {
-      try {
-        setLoading(true);
-        const response = await api.getMatches();
-        setMatches(response || []);
-        setError(null);
-      } catch (err) {
-        console.error("Error fetching matches:", err);
-        setError("Maçlar yüklenemedi");
-      } finally {
-        setLoading(false);
-      }
+    useEffect(() => {
+        if (!token) {
+            setLoading(false);
+            return;
+        }
+
+        const loadContent: () => Promise<void> = async () => {
+            try {
+                const data = await api.getMatches(token);
+                setMatches(data);
+            } catch (err: any) {
+                setError("Veriler yüklenemedi. Lütfen sayfayı yenileyin.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadContent();
+    }, [token]);
+
+    if (authLoading) {
+        return (
+            <div className="min-h-screen bg-[var(--background)] flex items-center justify-center">
+                <Loader2 className="w-8 h-8 text-[var(--primary)] animate-spin" />
+            </div>
+        );
     }
-    fetchMatches();
-  }, []);
 
-  return (
-    <div className="min-h-screen bg-[var(--background)]">
-      {/* Mobile Header */}
-      <header className="md:hidden fixed top-0 left-0 right-0 z-40 glass border-b border-[var(--card-border)]">
-        <div className="flex items-center justify-between px-4 py-3">
-          <Link href="/" className="text-xl font-bold text-[var(--primary)]">
-            BahisAnaliz
-          </Link>
-          <button 
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2"
-          >
-            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
+    if (!user) {
+        router.push("/");
+        return null;
+    }
+
+    return (
+        <div className="min-h-screen bg-[var(--background)] pb-20">
+            {/* VIP Navigation Bar */}
+            <nav className="border-b border-[var(--card-border)] bg-black/50 backdrop-blur-md sticky top-0 z-50">
+                <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                        <Shield className="w-6 h-6 text-[var(--primary)]" />
+                        <span className="font-bold text-lg tracking-tight uppercase">İddaa Aysel 301912</span>
+                    </div>
+                    <div className="flex items-center gap-4">
+                        <div className="hidden sm:flex text-sm text-[var(--text-muted)] items-center gap-2">
+                            <span className="w-2 h-2 rounded-full bg-[var(--primary)] animate-pulse" />
+                            Canlı Veri Ağı Aktif
+                        </div>
+                        <button
+                            onClick={logout}
+                            className="bg-[var(--card)] hover:bg-[var(--danger)]/20 border border-[var(--card-border)] hover:border-[var(--danger)]/50 text-[var(--text-muted)] hover:text-[var(--danger)] px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2"
+                        >
+                            <LogOut className="w-4 h-4" />
+                            Çıkış Yap
+                        </button>
+                    </div>
+                </div>
+            </nav>
+
+            <main className="max-w-7xl mx-auto px-4 pt-10">
+                <header className="mb-10">
+                    <h1 className="text-3xl font-bold mb-2">Günlük Analiz Bülteni</h1>
+                    <div className="flex items-center gap-2 text-[var(--text-muted)]">
+                        <Calendar className="w-4 h-4" />
+                        <span>Sadece size özel, yüksek isabetli Yapay Zeka tahminleri.</span>
+                    </div>
+                </header>
+
+                {error && (
+                    <div className="bg-[var(--danger)]/10 border border-[var(--danger)]/20 text-[var(--danger)] rounded-xl p-4 mb-8">
+                        {error}
+                    </div>
+                )}
+
+                {loading ? (
+                    <div className="flex items-center justify-center h-64">
+                        <Loader2 className="w-8 h-8 text-[var(--primary)] animate-spin" />
+                    </div>
+                ) : matches.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {matches.map((match: Match) => (
+                            <MatchCard key={match.id} match={match} />
+                        ))}
+                    </div>
+                ) : (
+                    <div className="card text-center py-20 px-4">
+                        <Shield className="w-12 h-12 text-[var(--text-muted)] mx-auto mb-4 opacity-50" />
+                        <p className="text-lg text-[var(--text-muted)]">Bugün için analiz bulunamadı.</p>
+                        <p className="text-sm text-[var(--text-subtle)] mt-2">Daha sonra tekrar kontrol ediniz.</p>
+                    </div>
+                )}
+            </main>
         </div>
-        
-        {/* Mobile Menu */}
-        {mobileMenuOpen && (
-          <nav className="px-4 pb-4 space-y-2">
-            <Link 
-              href="/" 
-              className="flex items-center gap-3 p-3 rounded-lg hover:bg-[var(--secondary)]"
-            >
-              <Home className="w-5 h-5" />
-              Ana Sayfa
-            </Link>
-            <Link 
-              href="/dashboard" 
-              className="flex items-center gap-3 p-3 rounded-lg bg-[var(--primary)]/10 text-[var(--primary)]"
-            >
-              <Calendar className="w-5 h-5" />
-              Maçlar
-            </Link>
-            <Link 
-              href="/dashboard/premium" 
-              className="flex items-center gap-3 p-3 rounded-lg hover:bg-[var(--secondary)]"
-            >
-              <BarChart3 className="w-5 h-5" />
-              Premium
-            </Link>
-          </nav>
-        )}
-      </header>
-
-      <div className="flex">
-        {/* Desktop Sidebar */}
-        <aside className="hidden md:flex flex-col w-64 h-screen sticky top-0 border-r border-[var(--card-border)] bg-[var(--card)]">
-          <div className="p-6 border-b border-[var(--card-border)]">
-            <Link href="/" className="text-2xl font-bold text-[var(--primary)]">
-              BahisAnaliz
-            </Link>
-          </div>
-          
-          <nav className="flex-1 p-4 space-y-2">
-            <Link 
-              href="/" 
-              className="flex items-center gap-3 p-3 rounded-lg hover:bg-[var(--secondary)] transition"
-            >
-              <Home className="w-5 h-5" />
-              Ana Sayfa
-            </Link>
-            <Link 
-              href="/dashboard" 
-              className="flex items-center gap-3 p-3 rounded-lg bg-[var(--primary)]/10 text-[var(--primary)]"
-            >
-              <Calendar className="w-5 h-5" />
-              Maçlar
-            </Link>
-            <Link 
-              href="/dashboard/premium" 
-              className="flex items-center gap-3 p-3 rounded-lg hover:bg-[var(--secondary)] transition"
-            >
-              <BarChart3 className="w-5 h-5" />
-              Premium Analizler
-            </Link>
-          </nav>
-
-          {/* Verification CTA in sidebar */}
-          {!isVerified && (
-            <div className="p-4 border-t border-[var(--card-border)]">
-              <button
-                onClick={() => setShowModal(true)}
-                className="btn-primary w-full flex items-center justify-center gap-2"
-              >
-                <Shield className="w-4 h-4" />
-                Doğrula
-              </button>
-            </div>
-          )}
-        </aside>
-
-        {/* Main Content */}
-        <main className="flex-1 pt-16 md:pt-0">
-          <div className="max-w-5xl mx-auto p-4 md:p-8">
-            {/* Page Header */}
-            <div className="mb-8">
-              <h1 className="text-2xl md:text-3xl font-bold mb-2">Denmark Superliga</h1>
-              <p className="text-[var(--text-muted)]">
-                Maç fikstürü ve sonuçlar (Free Plan - 2005/2006 sezonu)
-              </p>
-            </div>
-
-            {/* Loading State */}
-            {loading && (
-              <div className="flex items-center justify-center py-12">
-                <Loader2 className="w-8 h-8 animate-spin text-[var(--primary)]" />
-                <span className="ml-3 text-[var(--text-muted)]">Maçlar yükleniyor...</span>
-              </div>
-            )}
-
-            {/* Error State */}
-            {error && !loading && (
-              <div className="text-center py-12">
-                <p className="text-[var(--danger)] mb-4">{error}</p>
-                <button 
-                  onClick={() => window.location.reload()}
-                  className="btn-secondary"
-                >
-                  Tekrar Dene
-                </button>
-              </div>
-            )}
-
-            {/* Match Cards */}
-            {!loading && !error && matches.length > 0 && (
-              <div className="grid gap-4 md:grid-cols-2">
-                {matches.map((match) => (
-                  <MatchCard
-                    key={match.id}
-                    match={match}
-                    showPremium={false}
-                    isVerified={isVerified}
-                    onUnlockClick={() => setShowModal(true)}
-                  />
-                ))}
-              </div>
-            )}
-
-            {/* Empty state */}
-            {!loading && !error && matches.length === 0 && (
-              <div className="text-center py-12">
-                <Calendar className="w-12 h-12 text-[var(--text-muted)] mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">Henüz maç yok</h3>
-                <p className="text-[var(--text-muted)]">
-                  API'den maç verisi alınamadı. Lütfen daha sonra tekrar deneyin.
-                </p>
-              </div>
-            )}
-          </div>
-        </main>
-      </div>
-
-      {/* Verification Modal */}
-      <VerificationModal
-        isOpen={showModal}
-        onClose={() => setShowModal(false)}
-        onSuccess={() => {
-          window.location.href = "/dashboard/premium";
-        }}
-      />
-    </div>
-  );
+    );
 }

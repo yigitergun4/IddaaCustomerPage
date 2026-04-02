@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Bahis Analiz Platformu | AI Tahminleri ve xG Verileri",
-  description: "Profesyonel bahis analizleri, xG verileri ve AI destekli tahminler. Sadece doğrulanmış bayiler için premium içerikler.",
+  title: "İddaa Aysel 301912 | Özel Analiz Portalı",
+  description: "İddaa Aysel 301912 bayisi için özel olarak geliştirilmiş, AI destekli maç tahminleri ve xG analitik platformu.",
 };
 
 export default function RootLayout({

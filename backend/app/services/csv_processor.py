@@ -1,4 +1,5 @@
 import pandas as pd
+import re
 from datetime import datetime
 from typing import BinaryIO
 from sqlalchemy import delete
@@ -15,16 +16,7 @@ async def process_dealer_csv(
     Process dealer whitelist CSV and update database.
     
     Expected CSV format:
-    - Column 1: member_id (required)
-    - Column 2: dealer_name (optional)
-    
-    Args:
-        file: CSV file buffer
-        db: Database session
-        replace_all: If True, clear existing whitelist before import
-    
-    Returns:
-        Dict with import statistics
+    - Column 1: phone (required)
     """
     try:
         # Read CSV
@@ -33,30 +25,32 @@ async def process_dealer_csv(
         # Normalize column names
         df.columns = df.columns.str.strip().str.lower()
         
-        # Ensure member_id column exists
-        if 'member_id' not in df.columns:
+        # Ensure phone column exists
+        if 'phone' not in df.columns:
             # Try common alternatives
-            for col in ['memberid', 'id', 'uye_no', 'uye_numarasi']:
+            for col in ['telefon', 'tel', 'phone_number']:
                 if col in df.columns:
-                    df.rename(columns={col: 'member_id'}, inplace=True)
+                    df.rename(columns={col: 'phone'}, inplace=True)
                     break
             else:
                 return {
                     "success": False,
-                    "error": "CSV dosyasında 'member_id' sütunu bulunamadı.",
+                    "error": "CSV dosyasında 'phone' veya 'telefon' sütunu bulunamadı.",
                     "imported": 0
                 }
         
-        # Clean member_id values
-        df['member_id'] = df['member_id'].astype(str).str.strip().str.upper()
-        df = df[df['member_id'].notna() & (df['member_id'] != '')]
-        
-        # Get dealer_name if exists
-        if 'dealer_name' not in df.columns:
-            for col in ['name', 'bayi_adi', 'bayi_ismi', 'ad']:
-                if col in df.columns:
-                    df.rename(columns={col: 'dealer_name'}, inplace=True)
-                    break
+        # Clean phone values (remove all non-digit characters)
+        def clean_phone(val):
+            if pd.isna(val):
+                return ""
+            # Remove all non-digits
+            digits = re.sub(r'\D', '', str(val))
+            # Optional: adjust depending on local standard (e.g. remove leading 0 or 90)
+            # but for this portal let's just keep the digits.
+            return digits
+            
+        df['phone'] = df['phone'].apply(clean_phone)
+        df = df[df['phone'] != '']
         
         if replace_all:
             # Clear existing whitelist
@@ -67,25 +61,21 @@ async def process_dealer_csv(
         skipped_count = 0
         
         for _, row in df.iterrows():
-            member_id = row['member_id']
-            dealer_name = row.get('dealer_name', None)
+            phone = row['phone']
             
             # Check for duplicates
             from sqlalchemy import select
-            stmt = select(DealerWhitelist).where(DealerWhitelist.member_id == member_id)
+            stmt = select(DealerWhitelist).where(DealerWhitelist.phone == phone)
             result = await db.execute(stmt)
             existing = result.scalar_one_or_none()
             
             if existing:
-                # Update existing
-                existing.dealer_name = dealer_name
                 existing.updated_at = datetime.utcnow()
                 skipped_count += 1
             else:
                 # Create new entry
                 dealer = DealerWhitelist(
-                    member_id=member_id,
-                    dealer_name=dealer_name if pd.notna(dealer_name) else None,
+                    phone=phone,
                     updated_at=datetime.utcnow()
                 )
                 db.add(dealer)
@@ -98,7 +88,7 @@ async def process_dealer_csv(
             "imported": imported_count,
             "updated": skipped_count,
             "total": imported_count + skipped_count,
-            "message": f"{imported_count} yeni bayi eklendi, {skipped_count} bayi güncellendi."
+            "message": f"{imported_count} yeni telefon eklendi, {skipped_count} telefon güncellendi."
         }
         
     except Exception as e:

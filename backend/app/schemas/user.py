@@ -1,38 +1,16 @@
 from datetime import datetime
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, Field
 from typing import Optional
-
-
-class UserCreate(BaseModel):
-    """Schema for user registration."""
-    email: Optional[EmailStr] = None
-    phone: Optional[str] = Field(None, min_length=10, max_length=20)
-    password: str = Field(..., min_length=6)
 
 
 class UserResponse(BaseModel):
     """Schema for user data in responses."""
     id: int
-    email: Optional[str] = None
-    phone: Optional[str] = None
-    member_id: Optional[str] = None
-    is_verified: bool
+    phone: str
     created_at: datetime
     
     class Config:
         from_attributes = True
-
-
-class VerifyRequest(BaseModel):
-    """Schema for member ID verification request."""
-    member_id: str = Field(..., min_length=1, max_length=50, description="Iddaa Member ID to verify")
-
-
-class VerifyResponse(BaseModel):
-    """Schema for verification response."""
-    success: bool
-    message: str
-    is_verified: bool = False
 
 
 class Token(BaseModel):
@@ -42,8 +20,8 @@ class Token(BaseModel):
 
 
 class PhoneLoginRequest(BaseModel):
-    """Schema for phone-based login."""
-    phone: str = Field(..., min_length=10, max_length=20, description="Phone number")
+    """Schema for phone based login."""
+    phone: str = Field(..., description="Phone number")
 
 
 class SessionCheckResponse(BaseModel):
@@ -57,32 +35,11 @@ class TokenData(BaseModel):
     user_id: Optional[int] = None
 
 
-class MatchResponse(BaseModel):
-    """Schema for match data in responses."""
-    id: int
-    fixture_id: int
-    home_team: str
-    home_team_logo: Optional[str] = None
-    away_team: str
-    away_team_logo: Optional[str] = None
-    start_time: datetime
-    league_name: Optional[str] = None
-    status: str
-    home_score: Optional[int] = None
-    away_score: Optional[int] = None
-    odds: Optional["OddsResponse"] = None
-    stats: Optional["StatsResponse"] = None
-    
-    class Config:
-        from_attributes = True
-
-
 class OddsResponse(BaseModel):
     """Schema for odds data."""
     home_odd: Optional[float] = None
     draw_odd: Optional[float] = None
     away_odd: Optional[float] = None
-    provider: str = "API-Football"
     
     class Config:
         from_attributes = True
@@ -92,14 +49,26 @@ class StatsResponse(BaseModel):
     """Schema for stats data (premium content)."""
     home_xg: Optional[float] = None
     away_xg: Optional[float] = None
-    prediction_score: Optional[float] = None
-    home_win_probability: Optional[float] = None
-    draw_probability: Optional[float] = None
-    away_win_probability: Optional[float] = None
+    ai_prediction_score: Optional[float] = None
     
     class Config:
         from_attributes = True
 
 
-# Update forward references
+class MatchResponse(BaseModel):
+    """Schema for match data in responses."""
+    id: int
+    fixture_id: int
+    home_team: str
+    away_team: str
+    home_score: Optional[int] = None
+    away_score: Optional[int] = None
+    start_time: datetime
+    league_id: int
+    odds: Optional[OddsResponse] = None
+    stats: Optional[StatsResponse] = None
+    
+    class Config:
+        from_attributes = True
+
 MatchResponse.model_rebuild()

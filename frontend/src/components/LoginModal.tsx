@@ -11,7 +11,7 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<boolean>(false);
-    
+
     const { login } = useAuth();
 
     if (!isOpen) return null;
@@ -24,7 +24,7 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
 
     const handleSubmit: (e: React.FormEvent) => void = async (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         setLoading(true);
         setError(null);
 
@@ -52,11 +52,11 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             {/* Backdrop */}
-            <div 
+            <div
                 className="absolute inset-0 bg-black/70 backdrop-blur-sm"
                 onClick={onClose}
             />
-            
+
             {/* Modal */}
             <div className="relative w-full max-w-md glass rounded-2xl p-6 animate-float">
                 {/* Close button */}
@@ -69,11 +69,10 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
 
                 {/* Icon */}
                 <div className="flex justify-center mb-6">
-                    <div className={`w-16 h-16 rounded-full flex items-center justify-center ${
-                        success 
-                            ? "bg-[var(--success)]/20" 
-                            : "bg-[var(--primary)]/20"
-                    }`}>
+                    <div className={`w-16 h-16 rounded-full flex items-center justify-center ${success
+                        ? "bg-[var(--success)]/20"
+                        : "bg-[var(--primary)]/20"
+                        }`}>
                         {success ? (
                             <CheckCircle className="w-8 h-8 text-[var(--success)]" />
                         ) : (
@@ -115,9 +114,9 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
                                         onChange={handlePhoneChange}
                                         placeholder="5XX XXX XX XX"
                                         className="input text-lg tracking-wider !pl-14"
-                                        maxLength={14}
+                                        maxLength={11}
                                         required
-                                        disabled={loading} 
+                                        disabled={loading}
                                     />
                                 </div>
                             </div>

@@ -1,4 +1,7 @@
+from typing import AsyncGenerator
 from contextlib import asynccontextmanager
+import asyncio
+from datetime import datetime
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -7,13 +10,32 @@ from app.routers import users_router, matches_router, admin_router
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """Application lifespan handler for startup/shutdown events."""
     # Startup: Initialize database tables
     await init_db()
     print("✅ Database initialized")
+    
+    # Startup: Background task for data ingestion
+    async def bg_data_fetch():
+        from app.services.api_football import APIFootballService
+        from app.database import async_session_maker
+        while True:
+            try:
+                date_str = datetime.now().strftime("%Y-%m-%d")
+                print(f"🔄 Running background data ingestion for {date_str}...")
+                async with async_session_maker() as session:
+                    service = APIFootballService()
+                    await service.fetch_and_store_daily_fixtures(session, date_str)
+            except Exception as e:
+                print(f"❌ Background ingestion error: {e}")
+            await asyncio.sleep(24 * 3600)  # Run once a day
+    
+    task = asyncio.create_task(bg_data_fetch())
+    
     yield
     # Shutdown: Cleanup if needed
+    task.cancel()
     print("👋 Application shutting down")
 
 

@@ -8,9 +8,9 @@ class Settings(BaseSettings):
     # Database
     database_url: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/betting_platform"
     
-    # SportMonks API
-    sportmonks_api_token: str = ""
-    sportmonks_base_url: str = "https://api.sportmonks.com/v3"
+    # API-Football
+    api_football_key: str = "dummy_key"
+    api_football_base_url: str = "https://v3.football.api-sports.io"
     
     # Security
     secret_key: str = "your-secret-key-change-in-production"

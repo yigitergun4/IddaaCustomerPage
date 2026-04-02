@@ -5,7 +5,7 @@ import { MapPin, Instagram, Facebook } from "lucide-react";
 
 const Footer: React.FC = () => {
     return (
-        <footer className="relative w-full py-12 px-6 border-t border-white/5 backdrop-blur-md z-10 mt-auto">
+        <footer className="relative w-full py-12 px-6 border-t border-[var(--card-border)] backdrop-blur-md z-10 mt-auto">
             <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
                 {/* Copyright & Dealer Info */}
                 <div className="text-center md:text-left space-y-2">
@@ -26,7 +26,7 @@ const Footer: React.FC = () => {
                             href="https://www.instagram.com/iddaaysel/"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--primary)] hover:border-[var(--primary)]/50 hover:bg-[var(--primary)]/5 transition-all outline-none group"
+                            className="w-12 h-12 rounded-2xl bg-[var(--secondary)] border border-[var(--card-border)] flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--primary)] hover:border-[var(--primary)]/50 hover:bg-[var(--primary)]/5 transition-all outline-none group"
                             title="Instagram"
                         >
                             <Instagram className="w-6 h-6 transition-transform group-hover:scale-110" />
@@ -35,16 +35,16 @@ const Footer: React.FC = () => {
                             href="https://www.facebook.com/profile.php?id=61573291880962"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--primary)] hover:border-[var(--primary)]/50 hover:bg-[var(--primary)]/5 transition-all outline-none group"
+                            className="w-12 h-12 rounded-2xl bg-[var(--secondary)] border border-[var(--card-border)] flex items-center justify-center text-[var(--text-muted)] hover:text-[var(--primary)] hover:border-[var(--primary)]/50 hover:bg-[var(--primary)]/5 transition-all outline-none group"
                             title="Facebook"
                         >
                             <Facebook className="w-6 h-6 transition-transform group-hover:scale-110" />
                         </a>
                     </div>
-                    <div className="h-10 w-[1px] bg-white/10 hidden md:block" />
-                    <div className="flex items-center gap-3 px-4 py-2 rounded-xl bg-black/40 border border-white/5 shadow-inner">
+                    <div className="h-10 w-[1px] bg-[var(--card-border)] hidden md:block" />
+                    <div className="flex items-center gap-3 px-4 py-2 rounded-xl bg-[var(--secondary)] border border-[var(--card-border)] shadow-inner">
                         <div className="w-2.5 h-2.5 rounded-full bg-[var(--primary)] animate-pulse shadow-[0_0_10px_var(--primary)]" />
-                        <span className="text-xs font-bold text-white/50 uppercase tracking-widest whitespace-nowrap">System Secure</span>
+                        <span className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-widest whitespace-nowrap">System Secure</span>
                     </div>
                 </div>
             </div>

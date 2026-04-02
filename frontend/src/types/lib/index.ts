@@ -49,3 +49,9 @@ export interface SessionCheckResponse {
     valid: boolean;
     message: string;
 }
+
+export interface VerificationResponse {
+    success: boolean;
+    message: string;
+    is_verified: boolean;
+}

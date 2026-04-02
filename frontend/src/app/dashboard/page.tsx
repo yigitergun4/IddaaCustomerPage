@@ -5,8 +5,9 @@ import { useAuth } from "@/lib/AuthContext";
 import { api } from "@/lib/api";
 import { MatchCard } from "@/components/MatchCard";
 import { Match } from "@/types/lib";
-import { Shield, LogOut, Loader2, Calendar } from "lucide-react";
+import { Shield, LogOut, Loader2, Calendar, Settings } from "lucide-react";
 import { useRouter } from "next/navigation";
+import ThemeToggle from "@/components/ThemeToggle";
 
 export default function Dashboard() {
     const { user, token, logout, isLoading: authLoading } = useAuth();
@@ -35,6 +36,12 @@ export default function Dashboard() {
         loadContent();
     }, [token]);
 
+    useEffect(() => {
+        if (!authLoading && !user) {
+            router.push("/");
+        }
+    }, [authLoading, user, router]);
+
     if (authLoading) {
         return (
             <div className="min-h-screen bg-[var(--background)] flex items-center justify-center">
@@ -44,30 +51,36 @@ export default function Dashboard() {
     }
 
     if (!user) {
-        router.push("/");
-        return null;
+        return (
+            <div className="min-h-screen bg-[var(--background)] flex items-center justify-center">
+                <Loader2 className="w-8 h-8 text-[var(--primary)] animate-spin" />
+            </div>
+        );
     }
 
     return (
         <div className="min-h-screen bg-[var(--background)] pb-20">
             {/* VIP Navigation Bar */}
-            <nav className="border-b border-[var(--card-border)] bg-black/50 backdrop-blur-md sticky top-0 z-50">
+            <nav className="border-b border-[var(--card-border)] bg-[var(--card)]/50 backdrop-blur-md sticky top-0 z-50">
                 <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                        <Shield className="w-6 h-6 text-[var(--primary)]" />
-                        <span className="font-bold text-lg tracking-tight uppercase">İddaa Aysel 301912</span>
+                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                        <Shield className="w-5 h-5 shrink-0 text-[var(--primary)]" />
+                        <span className="font-bold text-base sm:text-lg tracking-tight uppercase text-[var(--foreground)] truncate pr-2">
+                            İddaa Aysel <span className="hidden xs:inline">301912</span>
+                        </span>
                     </div>
-                    <div className="flex items-center gap-4">
-                        <div className="hidden sm:flex text-sm text-[var(--text-muted)] items-center gap-2">
-                            <span className="w-2 h-2 rounded-full bg-[var(--primary)] animate-pulse" />
-                            Canlı Veri Ağı Aktif
+                    <div className="flex items-center gap-2 sm:gap-4 font-sans">
+                        <ThemeToggle />
+                        <div className="hidden lg:flex text-[10px] text-[var(--text-muted)] items-center gap-2 uppercase font-bold tracking-widest bg-[var(--secondary)] px-3 py-2 rounded-xl border border-[var(--card-border)]">
+                            <span className="w-1.5 h-1.5 rounded-full bg-[var(--primary)] animate-pulse" />
+                            Live Data
                         </div>
                         <button
                             onClick={logout}
-                            className="bg-[var(--card)] hover:bg-[var(--danger)]/20 border border-[var(--card-border)] hover:border-[var(--danger)]/50 text-[var(--text-muted)] hover:text-[var(--danger)] px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2"
+                            className="bg-[var(--card)] hover:bg-[var(--danger)]/10 border border-[var(--card-border)] hover:border-[var(--danger)]/30 text-[var(--text-muted)] hover:text-[var(--danger)] px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2"
                         >
                             <LogOut className="w-4 h-4" />
-                            Çıkış Yap
+                            <span className="hidden sm:inline">Çıkış Yap</span>
                         </button>
                     </div>
                 </div>
@@ -75,7 +88,7 @@ export default function Dashboard() {
 
             <main className="max-w-7xl mx-auto px-4 pt-10">
                 <header className="mb-10">
-                    <h1 className="text-3xl font-bold mb-2">Günlük Analiz Bülteni</h1>
+                    <h1 className="text-3xl font-bold mb-2 text-[var(--foreground)]">Günlük Analiz Bülteni</h1>
                     <div className="flex items-center gap-2 text-[var(--text-muted)]">
                         <Calendar className="w-4 h-4" />
                         <span>Sadece size özel, yüksek isabetli Yapay Zeka tahminleri.</span>

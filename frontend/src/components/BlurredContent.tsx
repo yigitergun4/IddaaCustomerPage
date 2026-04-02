@@ -1,18 +1,11 @@
 "use client";
 
-import { ReactNode } from "react";
 import { Lock, AlertCircle } from "lucide-react";
+import { BlurredContentProps } from "@/types/components";
 
-interface BlurredContentProps {
-  children: ReactNode;
-  isUnlocked?: boolean;
-  onUnlock?: () => void;
-  unlockText?: string;
-}
-
-export function BlurredContent({ 
-  children, 
-  isUnlocked = false, 
+export function BlurredContent({
+  children,
+  isUnlocked = false,
   onUnlock,
   unlockText = "Bayi ID ile Aç"
 }: BlurredContentProps) {
@@ -25,7 +18,7 @@ export function BlurredContent({
       <div className="blur-paywall">
         {children}
       </div>
-      
+
       <div className="absolute inset-0 flex items-center justify-center bg-black/20 rounded-lg">
         <button
           onClick={onUnlock}
@@ -51,7 +44,7 @@ export function LeagueTable({ showPredictions = true, isVerified = false, onUnlo
   return (
     <div className="card overflow-hidden">
       <h3 className="text-lg font-bold mb-4">Denmark Superliga Puan Durumu</h3>
-      
+
       <div className="flex flex-col items-center justify-center py-8 text-center">
         <AlertCircle className="w-12 h-12 text-[var(--text-muted)] mb-4" />
         <p className="text-[var(--text-muted)] mb-2">

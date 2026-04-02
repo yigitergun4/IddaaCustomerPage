@@ -32,11 +32,11 @@ const FeatureGrid: React.FC = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {features.map((feature, index) => (
                 <div key={index} className="flex items-start gap-4 group">
-                    <div className="w-12 h-12 shrink-0 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-[var(--primary)] group-hover:bg-[var(--primary)] group-hover:text-black transition-all">
+                    <div className="w-12 h-12 shrink-0 rounded-2xl bg-[var(--secondary)] border border-[var(--card-border)] flex items-center justify-center text-[var(--primary)] group-hover:bg-[var(--primary)] group-hover:text-white dark:group-hover:text-black transition-all">
                         <feature.icon className="w-6 h-6" />
                     </div>
                     <div className="text-left">
-                        <h3 className="text-white font-bold text-sm uppercase tracking-wider mb-1">
+                        <h3 className="text-[var(--foreground)] font-bold text-sm uppercase tracking-wider mb-1">
                             {feature.title}
                         </h3>
                         <p className="text-[var(--text-muted)] text-xs leading-relaxed opacity-70">

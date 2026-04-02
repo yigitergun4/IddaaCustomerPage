@@ -72,3 +72,15 @@ class MatchResponse(BaseModel):
         from_attributes = True
 
 MatchResponse.model_rebuild()
+
+
+class VerificationRequest(BaseModel):
+    """Schema for member ID verification."""
+    member_id: str = Field(..., description="Iddaa Member ID")
+
+
+class VerificationResponse(BaseModel):
+    """Schema for verification response."""
+    success: bool
+    message: str
+    is_verified: bool

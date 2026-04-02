@@ -1,0 +1,2 @@
+﻿season=2024  upcoming_results=0
+season=2025  upcoming_results=0

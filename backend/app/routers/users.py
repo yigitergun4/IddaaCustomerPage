@@ -11,11 +11,14 @@ from app.database import get_db
 from app.config import get_settings
 from app.models.user import User
 from app.models.dealer import DealerWhitelist
+from app.services.verification import verify_member_id
 from app.schemas.user import (
     UserResponse,
     Token,
     PhoneLoginRequest,
     SessionCheckResponse,
+    VerificationRequest,
+    VerificationResponse,
 )
 
 router = APIRouter(prefix="/api/users", tags=["users"])
@@ -162,3 +165,17 @@ async def logout(
     current_user.updated_at = datetime.utcnow()
     await db.commit()
     return {"message": "Başarıyla çıkış yapıldı"}
+
+
+@router.post("/verify", response_model=VerificationResponse)
+async def verify(
+    verification_data: VerificationRequest,
+    current_user: Annotated[User, Depends(get_current_user)],
+    db: AsyncSession = Depends(get_db)
+):
+    """Verify user's Iddaa member ID."""
+    return await verify_member_id(
+        user_id=current_user.id,
+        member_id=verification_data.member_id,
+        db=db
+    )

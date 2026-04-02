@@ -6,6 +6,7 @@ import { useAuth } from "@/lib/AuthContext";
 import { useRouter } from "next/navigation";
 import Footer from "@/components/Footer";
 import FeatureGrid from "@/components/FeatureGrid";
+import ThemeToggle from "@/components/ThemeToggle";
 
 export default function Home() {
     const [phone, setPhone] = useState<string>("");
@@ -48,10 +49,15 @@ export default function Home() {
     };
 
     return (
-        <main className="min-h-screen bg-[var(--background)] relative overflow-x-hidden font-sans flex flex-col">
+        <main className="min-h-screen bg-[var(--background)] relative overflow-x-hidden font-sans flex flex-col transition-colors duration-500">
+            {/* Top Navigation / Actions */}
+            <header className="relative z-50 w-full max-w-7xl mx-auto px-6 pt-6 flex justify-end md:absolute md:top-6 md:right-6 md:pt-0">
+                <ThemeToggle />
+            </header>
+
             {/* Dynamic Backgrounds */}
-            <div className="fixed inset-0 bg-[#0a0a0f] pointer-events-none z-0" />
-            <div className="fixed inset-0 bg-gradient-to-tr from-[#051105] via-transparent to-[#0a150a] pointer-events-none z-0" />
+            <div className="fixed inset-0 bg-[var(--background)] pointer-events-none z-0" />
+            <div className="fixed inset-0 bg-gradient-to-tr from-[var(--primary-muted)] via-transparent to-[var(--primary-muted)] opacity-50 pointer-events-none z-0" />
             <div className="fixed top-[-10%] right-[-10%] w-[800px] h-[800px] bg-[var(--primary)]/5 rounded-full blur-[150px] animate-pulse pointer-events-none z-0 select-none" />
             <div className="fixed bottom-[-10%] left-[-10%] w-[800px] h-[800px] bg-[var(--primary)]/5 rounded-full blur-[150px] animate-pulse pointer-events-none z-0 select-none" />
 
@@ -66,7 +72,7 @@ export default function Home() {
                                 <Lock className="w-3 h-3" />
                                 Güvenli VIP Bağlantısı
                             </div>
-                            <h1 className="text-5xl sm:text-7xl font-black tracking-tightest leading-none text-white">
+                            <h1 className="text-5xl sm:text-7xl font-black tracking-tightest leading-none text-[var(--foreground)]">
                                 İddaa <span className="text-[var(--primary)]">Aysel</span>
                                 <div className="text-3xl sm:text-4xl opacity-50 mt-2 lowercase">bayi no: 301912</div>
                             </h1>
@@ -82,22 +88,22 @@ export default function Home() {
 
                     {/* Right Side: Login Card */}
                     <div className="flex justify-center lg:justify-end">
-                        <div className="card glass w-full max-w-[440px] p-10 sm:p-14 border-[var(--primary)]/10 shadow-[0_40px_100px_rgba(0,0,0,0.6)] backdrop-blur-2xl relative overflow-hidden group">
+                        <div className="card glass w-full max-w-[440px] p-10 sm:p-14 border-[var(--primary)]/10 shadow-[0_40px_100px_rgba(0,0,0,0.2)] dark:shadow-[0_40px_100px_rgba(0,0,0,0.6)] backdrop-blur-2xl relative overflow-hidden group transition-all duration-300">
                             <div className="absolute inset-0 bg-gradient-to-b from-[var(--primary)]/5 to-transparent opacity-50 pointer-events-none" />
                             
                             <div className="relative z-10 space-y-10">
                                 <div className="text-center space-y-4">
-                                    <div className="w-20 h-20 bg-black/50 border border-[var(--primary)]/30 rounded-3xl flex items-center justify-center mx-auto shadow-2xl relative">
+                                    <div className="w-20 h-20 bg-[var(--secondary)] border border-[var(--primary)]/30 rounded-3xl flex items-center justify-center mx-auto shadow-2xl relative">
                                         <div className="absolute inset-0 bg-[var(--primary)] blur-2xl opacity-10" />
                                         <Shield className="w-10 h-10 text-[var(--primary)]" />
                                     </div>
-                                    <h2 className="text-2xl font-bold tracking-tight text-white uppercase italic">Üye Girişi</h2>
+                                    <h2 className="text-2xl font-bold tracking-tight text-[var(--foreground)] uppercase italic">Üye Girişi</h2>
                                 </div>
 
                                 <form onSubmit={handleSubmit} className="space-y-8">
                                     <div className="space-y-3">
-                                        <div className="flex items-stretch bg-black/40 border border-white/10 rounded-2xl focus-within:border-[var(--primary)]/60 focus-within:shadow-[0_0_40px_rgba(34,197,94,0.15)] transition-all overflow-hidden group/input">
-                                            <div className="flex items-center px-5 border-r border-white/5 bg-white/5">
+                                        <div className="flex items-stretch bg-[var(--secondary)] border border-[var(--card-border)] rounded-2xl focus-within:border-[var(--primary)]/60 focus-within:shadow-[0_0_40px_rgba(34,197,94,0.15)] transition-all overflow-hidden group/input">
+                                            <div className="flex items-center px-5 border-r border-[var(--card-border)] bg-[var(--background)]">
                                                 <span className="text-xl font-bold text-[var(--primary)]">0</span>
                                             </div>
                                             <input
@@ -110,7 +116,7 @@ export default function Home() {
                                                     if (val.startsWith("0")) val = val.substring(1);
                                                     setPhone(val.slice(0, 10));
                                                 }}
-                                                className="flex-1 bg-transparent border-none outline-none px-4 py-5 text-xl font-bold text-white placeholder:text-white/10 focus:ring-0"
+                                                className="flex-1 bg-transparent border-none outline-none px-4 py-5 text-xl font-bold text-[var(--foreground)] placeholder:text-[var(--text-subtle)]/30 focus:ring-0"
                                                 placeholder="5XX XXX XX XX"
                                                 disabled={isSubmitting}
                                                 autoFocus
@@ -127,7 +133,7 @@ export default function Home() {
                                     <button
                                         type="submit"
                                         disabled={isSubmitting || phone.length < 1}
-                                        className="btn-primary w-full py-5 text-lg text-black font-black uppercase tracking-widest flex items-center justify-center gap-3 rounded-2xl shadow-[0_20px_40px_rgba(34,197,94,0.2)] hover:scale-[1.02] active:scale-95 transition-all"
+                                        className="btn-primary w-full py-5 text-lg font-black uppercase tracking-widest flex items-center justify-center gap-3 rounded-2xl shadow-[0_20px_40px_rgba(34,197,94,0.2)] hover:scale-[1.02] active:scale-95 transition-all"
                                     >
                                         {isSubmitting ? (
                                             <Loader2 className="w-6 h-6 animate-spin" />

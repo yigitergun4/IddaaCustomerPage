@@ -3,13 +3,7 @@
 import { useState } from "react";
 import { X, Shield, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
 import { api } from "@/lib/api";
-
-interface VerificationModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onSuccess: () => void;
-  token?: string;
-}
+import { VerificationModalProps } from "@/types/components";
 
 export function VerificationModal({ isOpen, onClose, onSuccess, token }: VerificationModalProps) {
   const [memberId, setMemberId] = useState("");
@@ -32,7 +26,7 @@ export function VerificationModal({ isOpen, onClose, onSuccess, token }: Verific
       }
 
       const result = await api.verify(token, memberId);
-      
+
       if (result.success) {
         setSuccess(true);
         setTimeout(() => {
@@ -52,11 +46,11 @@ export function VerificationModal({ isOpen, onClose, onSuccess, token }: Verific
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div 
+      <div
         className="absolute inset-0 bg-black/70 backdrop-blur-sm"
         onClick={onClose}
       />
-      
+
       {/* Modal */}
       <div className="relative w-full max-w-md glass rounded-2xl p-6 animate-float">
         {/* Close button */}
@@ -69,11 +63,10 @@ export function VerificationModal({ isOpen, onClose, onSuccess, token }: Verific
 
         {/* Icon */}
         <div className="flex justify-center mb-6">
-          <div className={`w-16 h-16 rounded-full flex items-center justify-center ${
-            success 
-              ? "bg-[var(--success)]/20" 
+          <div className={`w-16 h-16 rounded-full flex items-center justify-center ${success
+              ? "bg-[var(--success)]/20"
               : "bg-[var(--primary)]/20"
-          }`}>
+            }`}>
             {success ? (
               <CheckCircle className="w-8 h-8 text-[var(--success)]" />
             ) : (

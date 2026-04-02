@@ -6,7 +6,7 @@ export function MatchCard({ match }: MatchCardProps) {
   const isStarted: boolean = match.home_score !== null && match.away_score !== null;
 
   return (
-    <div className="card border-[var(--primary)]/20 hover:border-[var(--primary)]/50 group bg-black/40 relative overflow-hidden">
+    <div className="card shadow-sm border-[var(--card-border)] hover:border-[var(--primary)]/50 group bg-[var(--card)] relative overflow-hidden transition-all duration-300">
       <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--primary)]/5 rounded-full blur-2xl -mr-16 -mt-16 transition-all group-hover:bg-[var(--primary)]/10" />
 
       {/* Header */}
@@ -22,7 +22,7 @@ export function MatchCard({ match }: MatchCardProps) {
       {/* Teams */}
       <div className="flex items-center justify-between mb-6 relative z-10">
         <div className="flex-1 text-center">
-          <span className="font-bold text-lg">{match.home_team}</span>
+          <span className="font-bold text-lg text-[var(--foreground)]">{match.home_team}</span>
         </div>
 
         <div className="px-4">
@@ -38,26 +38,26 @@ export function MatchCard({ match }: MatchCardProps) {
         </div>
 
         <div className="flex-1 text-center">
-          <span className="font-bold text-lg">{match.away_team}</span>
+          <span className="font-bold text-lg text-[var(--foreground)]">{match.away_team}</span>
         </div>
       </div>
 
       {/* Odds */}
       {match.odds && (
         <div className="grid grid-cols-3 gap-3 mb-6 relative z-10">
-          <div className="bg-[var(--background)] border border-[var(--card-border)] rounded-lg p-3 text-center">
+          <div className="bg-[var(--secondary)] border border-[var(--card-border)] rounded-lg p-3 text-center">
             <div className="text-xs text-[var(--text-muted)] mb-1 font-medium">1</div>
             <div className="font-bold text-[var(--primary)] text-lg">
               {formatOdd(match.odds.home_odd)}
             </div>
           </div>
-          <div className="bg-[var(--background)] border border-[var(--card-border)] rounded-lg p-3 text-center">
+          <div className="bg-[var(--secondary)] border border-[var(--card-border)] rounded-lg p-3 text-center">
             <div className="text-xs text-[var(--text-muted)] mb-1 font-medium">X</div>
-            <div className="font-bold text-white text-lg">
+            <div className="font-bold text-[var(--foreground)] text-lg">
               {formatOdd(match.odds.draw_odd)}
             </div>
           </div>
-          <div className="bg-[var(--background)] border border-[var(--card-border)] rounded-lg p-3 text-center">
+          <div className="bg-[var(--secondary)] border border-[var(--card-border)] rounded-lg p-3 text-center">
             <div className="text-xs text-[var(--text-muted)] mb-1 font-medium">2</div>
             <div className="font-bold text-[var(--primary)] text-lg">
               {formatOdd(match.odds.away_odd)}

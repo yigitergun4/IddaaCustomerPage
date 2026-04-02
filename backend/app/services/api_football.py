@@ -1,83 +1,63 @@
-from datetime import datetime, timedelta
-import random
-from sqlalchemy import select
+"""
+APIFootballService — backward-compatible adapter over the new FixtureService.
+
+This module preserves the existing call-sites (background task in main.py,
+matches router) while delegating all real work to the properly separated
+`FixtureService` + `APIFootballClient` stack.
+
+Old code called:
+    service = APIFootballService()
+    await service.fetch_and_store_daily_fixtures(db, date_str)
+
+That contract is kept intact here.
+"""
+
+from __future__ import annotations
+
+import logging
+from datetime import datetime
+
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.clients.api_football_client import APIFootballClient, APIFootballError
 from app.config import get_settings
-from app.models.match import Match
-from app.models.odds import Odds
-from app.models.stats import Stats
+from app.services.fixture_service import FixtureService
+
+logger = logging.getLogger(__name__)
 
 
 class APIFootballService:
-    """Service for fetching data from API-Football."""
-    
-    def __init__(self):
+    """
+    Facade that maintains backward compatibility with existing call-sites.
+
+    All rate-limit-safe caching logic lives in :class:`FixtureService`.
+    This class simply instantiates the right collaborators and delegates.
+    """
+
+    def __init__(self) -> None:
         self.settings = get_settings()
-        self.base_url = self.settings.api_football_base_url
-        self.headers = {
-            "x-apisports-key": self.settings.api_football_key,
-        }
-    
+
     async def fetch_and_store_daily_fixtures(self, db: AsyncSession, date: str) -> bool:
         """
-        Simulate fetching fixtures from API-Football and writing to PostgreSQL.
-        In production, this would make an actual HTTP request to /fixtures endpoint.
+        Ensure today's fixtures are in the local DB (cache-first).
+
+        Returns True on success, False if the live API call fails.
         """
-        print(f"[API-Football] Simulated fetch for date: {date}")
-        
-        # Check if already generated today
-        stmt = select(Match).where(Match.league_id == self.settings.league_id)
-        result = await db.execute(stmt)
-        existing = result.scalars().first()
-        if existing:
-            # For demo, if data exists we just say it's done. 
-            # In prod, we'd update or filter by exact date.
+        client = APIFootballClient()
+        service = FixtureService(client=client)
+
+        try:
+            matches = await service.get_todays_fixtures(db)
+            logger.info(
+                "[APIFootballService] %d fixtures ready for %s.",
+                len(matches),
+                date,
+            )
             return True
-            
-        # Dummy data simulating API response
-        dummy_teams = [
-            ("Galatasaray", "Fenerbahçe"),
-            ("Beşiktaş", "Trabzonspor"),
-            ("Başakşehir", "Adana Demirspor"),
-            ("Sivasspor", "Konyaspor"),
-        ]
-        
-        target_date = datetime.strptime(date, "%Y-%m-%d")
-        
-        for i, (home, away) in enumerate(dummy_teams):
-            fixture_id = 1000 + i
-            
-            # Create match
-            import random
-            match = Match(
-                fixture_id=fixture_id,
-                home_team=home,
-                away_team=away,
-                home_score=random.choice([None, 0, 1, 2, 3]),
-                away_score=random.choice([None, 0, 1, 2]),
-                start_time=target_date + timedelta(hours=19 + i),
-                league_id=self.settings.league_id,
-            )
-            db.add(match)
-            await db.flush() # flush to get match.id
-            
-            # Create odds
-            odds = Odds(
-                match_id=match.id,
-                home_odd=round(random.uniform(1.2, 4.0), 2),
-                draw_odd=round(random.uniform(2.5, 4.5), 2),
-                away_odd=round(random.uniform(1.5, 6.0), 2)
-            )
-            db.add(odds)
-            
-            # Create premium stats
-            stats = Stats(
-                match_id=match.id,
-                home_xg=round(random.uniform(0.5, 3.5), 2),
-                away_xg=round(random.uniform(0.5, 2.5), 2),
-                ai_prediction_score=round(random.uniform(40, 95), 1)
-            )
-            db.add(stats)
-            
-        await db.commit()
-        return True
+        except APIFootballError as exc:
+            logger.error("[APIFootballService] Live fetch failed: %s", exc)
+            # Do NOT crash the app — serve stale data if available
+            return False
+        except Exception as exc:
+            logger.exception("[APIFootballService] Unexpected error: %s", exc)
+            return False

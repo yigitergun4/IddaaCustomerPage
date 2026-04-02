@@ -3,6 +3,7 @@ import {
     Match,
     User,
     SessionCheckResponse,
+    VerificationResponse,
 } from "../types/lib";
 
 const API_BASE_URL: string = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
@@ -58,4 +59,12 @@ export const api = {
     // Get current user
     getMe: (token: string) =>
         fetchApi<User>("/api/users/me", { token }),
+
+    // Verify member ID
+    verify: (token: string, memberId: string) =>
+        fetchApi<VerificationResponse>("/api/users/verify", {
+            method: "POST",
+            token,
+            body: { member_id: memberId }
+        }),
 };

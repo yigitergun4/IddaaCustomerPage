@@ -1,164 +1,243 @@
 "use client";
 
-import { useState } from "react";
-import { Shield, Loader2, ArrowRight, Lock } from "lucide-react";
-import { useAuth } from "@/lib/AuthContext";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import Image from "next/image";
+import Link from "next/link";
 import Footer from "@/components/Footer";
-import FeatureGrid from "@/components/FeatureGrid";
-import ThemeToggle from "@/components/ThemeToggle";
 
-export default function Home() {
-    const [phone, setPhone] = useState<string>("");
-    const [error, setError] = useState<string>("");
-    const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-    const { login } = useAuth();
-    const router = useRouter();
+export default function ComingSoon() {
+  const [timeLeft, setTimeLeft] = useState<{
+    days: string;
+    hours: string;
+    mins: string;
+    secs: string;
+  }>({
+    days: "00",
+    hours: "00",
+    mins: "00",
+    secs: "00",
+  });
+  const [email, setEmail] = useState<string>("");
+  const [submitted, setSubmitted] = useState<boolean>(false);
 
-    const formatPhoneNumber = (value: string): string => {
-        if (!value) return value;
-        const number = value.replace(/[^\d]/g, "");
-        const length = number.length;
-        if (length < 4) return number;
-        if (length < 7) return `${number.slice(0, 3)} ${number.slice(3)}`;
-        if (length < 9) return `${number.slice(0, 3)} ${number.slice(3, 6)} ${number.slice(6)}`;
-        return `${number.slice(0, 3)} ${number.slice(3, 6)} ${number.slice(6, 8)} ${number.slice(8, 10)}`;
+  useEffect(() => {
+    // 45 days from now
+    const LAUNCH_DATE: Date = new Date(Date.now() + 45 * 24 * 60 * 60 * 1000);
+    const pad: (n: number) => string = (n: number) => String(n).padStart(2, "0");
+
+    const tick: () => void = () => {
+      const diff: number = LAUNCH_DATE.getTime() - Date.now();
+      if (diff <= 0) {
+        setTimeLeft({ days: "00", hours: "00", mins: "00", secs: "00" });
+        return;
+      }
+
+      setTimeLeft({
+        days: pad(Math.floor(diff / 86400000)),
+        hours: pad(Math.floor((diff % 86400000) / 3600000)),
+        mins: pad(Math.floor((diff % 3600000) / 60000)),
+        secs: pad(Math.floor((diff % 60000) / 1000)),
+      });
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setError("");
+    tick();
+    const intervalId: NodeJS.Timeout = setInterval(tick, 1000);
+    return () => clearInterval(intervalId);
+  }, []);
 
-        const rawDigits = phone.replace(/\D/g, "");
-        const formattedPhone = "0" + rawDigits;
+  const handleNotifySubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
 
-        if (rawDigits.length !== 10) {
-            setError("Lütfen numaranızı eksiksiz giriniz.");
-            return;
-        }
+    try {
+      const response = await fetch("http://localhost:8000/api/waitlist/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
 
-        setIsSubmitting(true);
-        try {
-            await login(formattedPhone);
-            router.push("/dashboard");
-        } catch (err: any) {
-            setError(err.message || "Giriş başarısız oldu.");
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
+      if (response.ok) {
+        setSubmitted(true);
+      } else {
+        alert("Bir hata oluştu, lütfen tekrar deneyin.");
+      }
+    } catch (error) {
+      console.error("Waitlist error:", error);
+      alert("Sunucuya ulaşılamadı. Lütfen daha sonra tekrar deneyin.");
+    }
+  };
 
-    return (
-        <main className="min-h-screen bg-[var(--background)] relative overflow-x-hidden font-sans flex flex-col transition-colors duration-500">
-            {/* Top Navigation / Actions */}
-            <header className="relative z-50 w-full max-w-7xl mx-auto px-6 pt-6 flex justify-end md:absolute md:top-6 md:right-6 md:pt-0">
-                <ThemeToggle />
-            </header>
+  return (
+    <div className="relative min-h-screen flex flex-col items-center bg-[#080c10] text-[#e8edf4] font-sans overflow-x-hidden">
+      {/* Background Glow */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden flex items-center justify-center">
+        <div className="w-[800px] h-[800px] bg-[radial-gradient(circle,rgba(0,230,118,0.08)_0%,transparent_70%)] rounded-full shrink-0" />
+      </div>
 
-            {/* Dynamic Backgrounds */}
-            <div className="fixed inset-0 bg-[var(--background)] pointer-events-none z-0" />
-            <div className="fixed inset-0 bg-gradient-to-tr from-[var(--primary-muted)] via-transparent to-[var(--primary-muted)] opacity-50 pointer-events-none z-0" />
-            <div className="fixed top-[-10%] right-[-10%] w-[800px] h-[800px] bg-[var(--primary)]/5 rounded-full blur-[150px] animate-pulse pointer-events-none z-0 select-none" />
-            <div className="fixed bottom-[-10%] left-[-10%] w-[800px] h-[800px] bg-[var(--primary)]/5 rounded-full blur-[150px] animate-pulse pointer-events-none z-0 select-none" />
+      {/* Grid Overlay */}
+      <div
+        className="fixed inset-0 pointer-events-none z-0 opacity-50"
+        style={{
+          backgroundImage:
+            "linear-gradient(rgba(0,230,118,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,230,118,0.03) 1px, transparent 1px)",
+          backgroundSize: "60px 60px",
+        }}
+      />
 
-            {/* Main Content Wrapper */}
-            <div className="relative z-10 w-full max-w-7xl mx-auto px-6 flex-1 flex flex-col justify-center py-8 lg:py-16">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-                    
-                    {/* Left Side: Branding and Info */}
-                    <div className="space-y-12 text-center lg:text-left">
-                        <div className="space-y-6">
-                            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[var(--primary)]/10 border border-[var(--primary)]/20 text-[var(--primary)] text-xs font-bold uppercase tracking-widest">
-                                <Lock className="w-3 h-3" />
-                                Güvenli VIP Bağlantısı
-                            </div>
-                            <h1 className="text-5xl sm:text-7xl font-black tracking-tightest leading-none text-[var(--foreground)]">
-                                İddaa <span className="text-[var(--primary)]">Aysel</span>
-                                <div className="text-3xl sm:text-4xl opacity-50 mt-2 lowercase">bayi no: 301912</div>
-                            </h1>
-                            <p className="text-[var(--text-muted)] text-lg sm:text-xl max-w-xl mx-auto lg:mx-0 leading-relaxed font-medium">
-                                Türkiye&apos;nin en gelişmiş yapay zeka destekli bahis analiz portalına hoş geldiniz. 
-                                Sadece bayimize kayıtlı üyeler için özel içerik.
-                            </p>
-                        </div>
-
-                        {/* Feature Grid Component */}
-                        <FeatureGrid />
-                    </div>
-
-                    {/* Right Side: Login Card */}
-                    <div className="flex justify-center lg:justify-end">
-                        <div className="card glass w-full max-w-[440px] p-10 sm:p-14 border-[var(--primary)]/10 shadow-[0_40px_100px_rgba(0,0,0,0.2)] dark:shadow-[0_40px_100px_rgba(0,0,0,0.6)] backdrop-blur-2xl relative overflow-hidden group transition-all duration-300">
-                            <div className="absolute inset-0 bg-gradient-to-b from-[var(--primary)]/5 to-transparent opacity-50 pointer-events-none" />
-                            
-                            <div className="relative z-10 space-y-10">
-                                <div className="text-center space-y-4">
-                                    <div className="w-20 h-20 bg-[var(--secondary)] border border-[var(--primary)]/30 rounded-3xl flex items-center justify-center mx-auto shadow-2xl relative">
-                                        <div className="absolute inset-0 bg-[var(--primary)] blur-2xl opacity-10" />
-                                        <Shield className="w-10 h-10 text-[var(--primary)]" />
-                                    </div>
-                                    <h2 className="text-2xl font-bold tracking-tight text-[var(--foreground)] uppercase italic">Üye Girişi</h2>
-                                </div>
-
-                                <form onSubmit={handleSubmit} className="space-y-8">
-                                    <div className="space-y-3">
-                                        <div className="flex items-stretch bg-[var(--secondary)] border border-[var(--card-border)] rounded-2xl focus-within:border-[var(--primary)]/60 focus-within:shadow-[0_0_40px_rgba(34,197,94,0.15)] transition-all overflow-hidden group/input">
-                                            <div className="flex items-center px-5 border-r border-[var(--card-border)] bg-[var(--background)]">
-                                                <span className="text-xl font-bold text-[var(--primary)]">0</span>
-                                            </div>
-                                            <input
-                                                id="phone"
-                                                type="tel"
-                                                inputMode="numeric"
-                                                value={formatPhoneNumber(phone)}
-                                                onChange={(e) => {
-                                                    let val = e.target.value.replace(/\D/g, "");
-                                                    if (val.startsWith("0")) val = val.substring(1);
-                                                    setPhone(val.slice(0, 10));
-                                                }}
-                                                className="flex-1 bg-transparent border-none outline-none px-4 py-5 text-xl font-bold text-[var(--foreground)] placeholder:text-[var(--text-subtle)]/30 focus:ring-0"
-                                                placeholder="5XX XXX XX XX"
-                                                disabled={isSubmitting}
-                                                autoFocus
-                                            />
-                                        </div>
-                                    </div>
-
-                                    {error && (
-                                        <div className="bg-[var(--danger)]/10 border border-[var(--danger)]/20 text-[var(--danger)] text-xs font-bold px-4 py-4 rounded-xl text-center animate-shake">
-                                            {error}
-                                        </div>
-                                    )}
-
-                                    <button
-                                        type="submit"
-                                        disabled={isSubmitting || phone.length < 1}
-                                        className="btn-primary w-full py-5 text-lg font-black uppercase tracking-widest flex items-center justify-center gap-3 rounded-2xl shadow-[0_20px_40px_rgba(34,197,94,0.2)] hover:scale-[1.02] active:scale-95 transition-all"
-                                    >
-                                        {isSubmitting ? (
-                                            <Loader2 className="w-6 h-6 animate-spin" />
-                                        ) : (
-                                            <>
-                                                Giriş Yap
-                                                <ArrowRight className="w-6 h-6" />
-                                            </>
-                                        )}
-                                    </button>
-                                </form>
-
-                                <div className="pt-4 text-center">
-                                    <p className="text-[10px] text-[var(--text-subtle)] font-bold uppercase tracking-[.2em] opacity-50">
-                                        End-to-End Encryption Secured
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+      <div className="relative z-10 w-full max-w-[1100px] flex flex-col min-h-screen px-6">
+        {/* Header */}
+        <header className="w-full py-7 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-white to-[#00e676]">
+              İddaaysel
+            </span>
+          </div>
+          <div className="flex items-center gap-4">
+            <div className="hidden sm:flex items-center gap-2 px-4 py-1.5 border border-white/10 rounded-full text-xs font-medium text-[#8b9ab1] bg-white/5 backdrop-blur-md">
+              <span className="w-2 h-2 rounded-full bg-[#00e676] shadow-[0_0_8px_#00e676] animate-pulse" />
+              Geliştirme Aşamasında
             </div>
+            {/* Link to login page */}
+            <Link
+              href="/login"
+              className="text-sm font-medium px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 transition-colors"
+            >
+              Bayi Girişi
+            </Link>
+          </div>
+        </header>
 
-            {/* Reusable Footer Component */}
-            <Footer />
+        {/* Main Content */}
+        <main className="flex-1 flex flex-col items-center text-center pt-12 pb-20">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 border border-[#00e676]/25 rounded-full text-[13px] font-semibold text-[#00e676] bg-[#00e676]/5 tracking-widest uppercase mb-8">
+            🚀 Yalnızca 301912 Bayi Kodlu Oyunculara Özel
+          </div>
+
+          <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold leading-tight tracking-tight max-w-[820px] mb-6">
+            İddaaysel ile <br />
+            <span className="bg-clip-text text-transparent bg-gradient-to-br from-[#00e676] to-[#69f0ae]">
+              Bahis Analitiğinde Yeni Dönem
+            </span>
+          </h1>
+
+          <p className="text-base md:text-lg text-[#8b9ab1] max-w-[600px] leading-relaxed mb-8">
+            Yapay zeka destekli tahminler, xG verileri ve özel analizlerle donatılmış premium spor analitiği platformumuz hazırlanıyor.
+            <br />
+            <br />
+            Bu platform <strong className="text-white">tamamen ücretsiz</strong> olup, <strong className="text-[#00e676]">yalnızca İddaa uygulamasında 301912 numaralı bayi kodumuzu kullanan</strong> üyelerimize özel olacaktır.
+          </p>
+
+          <div className="w-full max-w-[600px] mb-12 p-5 border border-yellow-500/30 bg-yellow-500/5 rounded-2xl flex items-start gap-4 text-left animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <div className="text-2xl mt-0.5">⚠️</div>
+            <div>
+              <h4 className="text-yellow-500 font-bold mb-1 uppercase tracking-wider text-xs">Vakit Kaybetmeden Güncelleyin</h4>
+              <p className="text-sm text-[#8b9ab1] leading-relaxed">
+                Platformumuz yayına girdiğinde sorunsuz erişim sağlayabilmek için İddaa uygulamasındaki bayi kodunuzu hemen <strong className="text-white">301912</strong> olarak değiştirin. Üyelik onayınız bu kod üzerinden kontrol edilecektir.
+              </p>
+            </div>
+          </div>
+
+          {/* Countdown */}
+          <div className="flex flex-wrap justify-center gap-4 md:gap-5 mb-16">
+            {[
+              { num: timeLeft.days, label: "Gün" },
+              { num: timeLeft.hours, label: "Saat" },
+              { num: timeLeft.mins, label: "Dakika" },
+              { num: timeLeft.secs, label: "Saniye" },
+            ].map((unit, idx) => (
+              <div
+                key={idx}
+                className="flex flex-col items-center gap-2 min-w-[80px] md:min-w-[90px] p-4 md:p-6 bg-white/5 border border-white/10 rounded-2xl backdrop-blur-md hover:border-[#00e676]/30 hover:-translate-y-1 transition-all"
+              >
+                <span className="text-3xl md:text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-br from-white to-[#00e676] tracking-tighter">
+                  {unit.num}
+                </span>
+                <span className="text-[10px] md:text-xs font-medium text-[#8b9ab1] tracking-widest uppercase">
+                  {unit.label}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          {/* Features Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-[860px] mb-16 text-left">
+            {[
+              {
+                icon: "🤖",
+                title: "Yapay Zeka Tahminleri",
+                desc: "Makine öğrenimi modelleriyle hesaplanan maç olasılıkları ve skor tahminleri.",
+              },
+              {
+                icon: "📊",
+                title: "xG Analizi",
+                desc: "Beklenen gol (xG) verileriyle derinlemesine performans analizi.",
+              },
+              {
+                icon: "🔐",
+                title: "Bayi Doğrulama",
+                desc: <>Yalnızca İddaa uygulamasında <strong className="text-white font-bold">301912</strong> numaralı bayi koduyla oynayanlar için özel premium içerik erişimi.</>,
+              },
+              {
+                icon: "⚡",
+                title: "Canlı Veriler",
+                desc: "Süper Lig ve diğer liglere ait anlık maç istatistikleri.",
+              },
+            ].map((feat, idx) => (
+              <div
+                key={idx}
+                className="p-6 bg-white/[0.025] border border-white/10 rounded-2xl hover:bg-[#00e676]/5 hover:border-[#00e676]/25 hover:-translate-y-1 transition-all"
+              >
+                <div className="w-11 h-11 flex items-center justify-center rounded-xl bg-[#00e676]/10 border border-[#00e676]/20 text-xl mb-4">
+                  {feat.icon}
+                </div>
+                <h3 className="text-[15px] font-bold text-white mb-2">
+                  {feat.title}
+                </h3>
+                <p className="text-[13px] text-[#8b9ab1] leading-relaxed">
+                  {feat.desc}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          {/* Notify Form */}
+          <div className="w-full max-w-[480px]">
+            <p className="text-[13px] md:text-sm text-[#8b9ab1] mb-4">
+              İddaa uygulamasında <strong>301912</strong> bayi kodumuzla oynuyorsanız, yayına girdiğimizde ilk sizin haberiniz olsun:
+            </p>
+            {!submitted ? (
+              <form
+                onSubmit={handleNotifySubmit}
+                className="flex flex-col sm:flex-row gap-3"
+              >
+                <input
+                  type="email"
+                  required
+                  placeholder="ornek@email.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="flex-1 px-4 py-3.5 rounded-xl border border-white/10 bg-white/5 text-white text-sm outline-none focus:border-[#00e676]/40 transition-colors placeholder:text-[#8b9ab1]"
+                />
+                <button
+                  type="submit"
+                  className="px-6 py-3.5 rounded-xl bg-gradient-to-br from-[#00e676] to-[#00c853] text-[#080c10] text-sm font-bold whitespace-nowrap hover:opacity-90 hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(0,230,118,0.3)] transition-all"
+                >
+                  Beni Bildir
+                </button>
+              </form>
+            ) : (
+              <div className="px-4 py-4 rounded-xl bg-[#00e676]/10 border border-[#00e676]/20 text-[#00e676] text-sm font-medium animate-in fade-in">
+                ✅ Kaydınız alındı! Yayına girdiğimizde sizi bilgilendireceğiz.
+              </div>
+            )}
+          </div>
         </main>
-    );
+
+        {/* Footer */}
+        <div className="w-full mt-10">
+          <Footer />
+        </div>
+      </div>
+    </div>
+  );
 }

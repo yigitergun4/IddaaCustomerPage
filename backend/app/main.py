@@ -6,7 +6,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.database import init_db
-from app.routers import users_router, matches_router, admin_router, fixtures_router, analysis_router
+from app.routers import users_router, matches_router, admin_router, fixtures_router, analysis_router, waitlist_router
 
 
 @asynccontextmanager
@@ -80,6 +80,7 @@ app.include_router(matches_router)
 app.include_router(fixtures_router)
 app.include_router(analysis_router)
 app.include_router(admin_router)
+app.include_router(waitlist_router)
 
 
 @app.get("/", tags=["health"])

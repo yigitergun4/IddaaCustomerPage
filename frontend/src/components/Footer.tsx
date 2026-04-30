@@ -13,7 +13,7 @@ const Footer: React.FC = () => {
                         &copy; {new Date().getFullYear()} <span className="text-[var(--primary)] font-bold">İddaa Aysel 301912</span>. Tüm hakları saklıdır.
                     </p>
                     <p className="text-[var(--text-subtle)] text-[11px] uppercase tracking-widest opacity-60 flex items-center justify-center md:justify-start gap-2">
-                        <MapPin className="w-3 h-3" />
+                        <MapPin className="w-6 h-6" />
                         Adres: İnönü Mahallesi Selim Sokak No:28/A, Küçükçekmece/İstanbul
                     </p>
                 </div>

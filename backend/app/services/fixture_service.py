@@ -139,7 +139,7 @@ class FixtureService:
             select(Match)
             .where(
                 Match.league_id == SUPER_LIG_LEAGUE_ID,
-                func.date(Match.start_time) == date,
+                func.date(Match.start_time) == datetime.strptime(date, "%Y-%m-%d").date(),
             )
         )
         result = await db.execute(stmt)

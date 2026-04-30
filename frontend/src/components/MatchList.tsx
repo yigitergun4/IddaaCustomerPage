@@ -1,6 +1,6 @@
 "use client";
 
-import { Match } from "@/lib/api";
+import { Match } from "@/types/lib";
 import { MatchCard } from "@/components/MatchCard";
 import { Calendar } from "lucide-react";
 

@@ -1,4 +1,4 @@
-import { Match } from "@/lib/api";
+import { Match } from "@/types/lib";
 
 // Re-export the Match type from api for use across components
 export type { Match };
@@ -24,17 +24,17 @@ export function getProbabilities(match: Match): ProbabilityEntry[] {
   return [
     {
       label: "Ev Sahibi Kazanır",
-      value: match.stats.home_win_probability,
+      value: match.stats.home_win_probability ?? null,
       color: "var(--primary)",
     },
     {
       label: "Beraberlik",
-      value: match.stats.draw_probability,
+      value: match.stats.draw_probability ?? null,
       color: "var(--warning)",
     },
     {
       label: "Deplasman Kazanır",
-      value: match.stats.away_win_probability,
+      value: match.stats.away_win_probability ?? null,
       color: "var(--info)",
     },
   ];

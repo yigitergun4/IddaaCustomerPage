@@ -9,6 +9,7 @@ export interface LoginModalProps {
 
 export interface MatchCardProps {
     match: Match;
+    onClick?: (match: Match) => void;
 }
 
 export interface Feature {

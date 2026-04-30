@@ -29,6 +29,10 @@ export interface Match {
     away_score: number | null;
     start_time: string;
     league_id: number;
+    status?: string;
+    home_team_logo?: string;
+    away_team_logo?: string;
+    league_name?: string;
     odds: Odds | null;
     stats: Stats | null;
 }
@@ -37,12 +41,17 @@ export interface Odds {
     home_odd: number | null;
     draw_odd: number | null;
     away_odd: number | null;
+    provider?: string;
 }
 
 export interface Stats {
     home_xg: number | null;
     away_xg: number | null;
     ai_prediction_score: number | null;
+    prediction_score?: number | null;
+    home_win_probability?: number | null;
+    draw_probability?: number | null;
+    away_win_probability?: number | null;
 }
 
 export interface SessionCheckResponse {

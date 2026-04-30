@@ -133,6 +133,14 @@ export default function ComingSoon() {
               <h4 className="text-yellow-500 font-bold mb-1 uppercase tracking-wider text-xs">Vakit Kaybetmeden Güncelleyin</h4>
               <p className="text-sm text-[#8b9ab1] leading-relaxed">
                 Platformumuz yayına girdiğinde sorunsuz erişim sağlayabilmek için İddaa uygulamasındaki bayi kodunuzu hemen <strong className="text-white">301912</strong> olarak değiştirin. Üyelik onayınız bu kod üzerinden kontrol edilecektir.
+                <br />
+                <Link 
+                  href="https://www.iddaa.com/" 
+                  target="_blank" 
+                  className="inline-flex items-center gap-1 mt-3 text-[#00e676] hover:text-[#00c864] font-bold text-xs bg-[#00e676]/10 px-3 py-1.5 rounded-lg border border-[#00e676]/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                >
+                  iddaa.com üzerinden bayi kodu güncelle →
+                </Link>
               </p>
             </div>
           </div>

@@ -2,11 +2,14 @@ import { Clock, TrendingUp } from "lucide-react";
 import { MatchCardProps } from "@/types/components";
 import { formatTime, formatOdd } from "@/lib/utils";
 
-export function MatchCard({ match }: MatchCardProps) {
+export function MatchCard({ match, onClick }: MatchCardProps) {
   const isStarted: boolean = match.home_score !== null && match.away_score !== null;
 
   return (
-    <div className="card shadow-sm border-[var(--card-border)] hover:border-[var(--primary)]/50 group bg-[var(--card)] relative overflow-hidden transition-all duration-300">
+    <div 
+      onClick={() => onClick?.(match)}
+      className="card shadow-sm border-[var(--card-border)] hover:border-[var(--primary)]/50 group bg-[var(--card)] relative overflow-hidden transition-all duration-300 cursor-pointer"
+    >
       <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--primary)]/5 rounded-full blur-2xl -mr-16 -mt-16 transition-all group-hover:bg-[var(--primary)]/10" />
 
       {/* Header */}

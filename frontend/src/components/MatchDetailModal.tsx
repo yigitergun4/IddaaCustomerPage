@@ -10,7 +10,7 @@ import {
   ChevronRight,
   Minus,
 } from "lucide-react";
-import { Match } from "@/lib/api";
+import { Match } from "@/types/lib";
 import { formatTime, formatOdd } from "@/lib/utils";
 import { getMatchStatus, getProbabilities } from "@/types/match";
 
@@ -91,7 +91,7 @@ function ProbabilityBar({
 }
 
 function TeamHeader({ match }: { match: Match }) {
-  const status: string = getMatchStatus(match.status);
+  const status: string = getMatchStatus(match.status || "upcoming");
   const isScored = status !== "upcoming";
 
   return (

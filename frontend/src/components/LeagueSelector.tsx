@@ -2,14 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { api } from "@/lib/api";
+import { League } from "@/types/lib";
 import { Trophy, Globe, Loader2, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-interface League {
-  id: number;
-  name: string;
-  country: string;
-}
 
 interface LeagueSelectorProps {
   activeLeagueId: number;

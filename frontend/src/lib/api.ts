@@ -4,6 +4,7 @@ import {
     User,
     SessionCheckResponse,
     VerificationResponse,
+    League,
 } from "../types/lib";
 
 const API_BASE_URL: string = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
@@ -67,4 +68,12 @@ export const api = {
             token,
             body: { member_id: memberId }
         }),
+
+    // Leagues (Mocked for now to fix build)
+    getLeagues: (): Promise<League[]> =>
+        Promise.resolve([
+            { id: 203, name: "Süper Lig", country: "Turkey" },
+            { id: 39, name: "Premier League", country: "England" },
+            { id: 140, name: "La Liga", country: "Spain" }
+        ]),
 };

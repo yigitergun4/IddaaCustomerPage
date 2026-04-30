@@ -55,3 +55,9 @@ export interface VerificationResponse {
     message: string;
     is_verified: boolean;
 }
+
+export interface League {
+    id: number;
+    name: string;
+    country: string;
+}

@@ -52,12 +52,12 @@ export default function Home() {
     return (
         <main className="min-h-screen bg-[var(--background)] relative overflow-x-hidden font-sans flex flex-col transition-colors duration-500">
             {/* Top Navigation / Actions */}
-            <header className="relative z-50 w-full max-w-7xl mx-auto px-6 pt-6 flex items-center justify-between md:absolute md:top-6 md:left-0 md:right-0 md:pt-0">
+            <header className="relative z-50 w-full max-w-7xl mx-auto px-4 py-4 md:px-6 md:py-8 flex items-center justify-between">
                 <Link 
                     href="/" 
-                    className="group flex items-center gap-2 text-sm font-medium text-[var(--text-muted)] hover:text-[var(--primary)] transition-all duration-300 bg-white/5 backdrop-blur-md px-4 py-2 rounded-xl border border-white/10 hover:border-[var(--primary)]/30 shadow-xl"
+                    className="group flex items-center gap-2 text-xs sm:text-sm font-medium text-[var(--text-muted)] hover:text-[var(--primary)] transition-all duration-300 bg-white/5 backdrop-blur-md px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl border border-white/10 hover:border-[var(--primary)]/30 shadow-xl"
                 >
-                    <ArrowLeft className="w-4 h-4 transform group-hover:-translate-x-1 transition-transform" />
+                    <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4 transform group-hover:-translate-x-1 transition-transform" />
                     <span>Ana Sayfaya Dön</span>
                 </Link>
                 <ThemeToggle />
@@ -80,9 +80,9 @@ export default function Home() {
                                 <Lock className="w-3 h-3" />
                                 Güvenli VIP Bağlantısı
                             </div>
-                            <h1 className="text-5xl sm:text-7xl font-black tracking-tightest leading-none text-[var(--foreground)]">
+                            <h1 className="text-4xl sm:text-7xl font-black tracking-tightest leading-none text-[var(--foreground)]">
                                 İddaa <span className="text-[var(--primary)]">Aysel</span>
-                                <div className="text-3xl sm:text-4xl opacity-50 mt-2 lowercase">Bayi No: 301912</div>
+                                <div className="text-2xl sm:text-4xl opacity-50 mt-2 lowercase">Bayi No: 301912</div>
                             </h1>
                             <p className="text-[var(--text-muted)] text-lg sm:text-xl max-w-xl mx-auto lg:mx-0 leading-relaxed font-medium">
                                 Türkiye&apos;nin en gelişmiş yapay zeka destekli bahis analiz portalına hoş geldiniz. 
@@ -92,8 +92,8 @@ export default function Home() {
                     </div>
 
                     {/* Right Side: Login Card */}
-                    <div className="flex justify-center lg:justify-end order-2 lg:row-span-2 self-center">
-                        <div className="card glass w-full max-w-[440px] p-10 sm:p-14 border-[var(--primary)]/10 shadow-[0_40px_100px_rgba(0,0,0,0.2)] dark:shadow-[0_40px_100px_rgba(0,0,0,0.6)] backdrop-blur-2xl relative overflow-hidden group transition-all duration-300">
+                    <div className="flex justify-center lg:justify-end order-2 lg:row-span-2 self-center w-full">
+                        <div className="card glass w-full max-w-[440px] p-6 sm:p-10 md:p-14 border-[var(--primary)]/10 shadow-[0_40px_100px_rgba(0,0,0,0.2)] dark:shadow-[0_40px_100px_rgba(0,0,0,0.6)] backdrop-blur-2xl relative overflow-hidden group transition-all duration-300">
                             <div className="absolute inset-0 bg-gradient-to-b from-[var(--primary)]/5 to-transparent opacity-50 pointer-events-none" />
                             
                             <div className="relative z-10 space-y-10">

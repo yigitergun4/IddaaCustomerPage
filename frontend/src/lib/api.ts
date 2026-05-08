@@ -7,7 +7,7 @@ import {
     League,
 } from "../types/lib";
 
-const API_BASE_URL: string = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+export const API_BASE_URL: string = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 async function fetchApi<T>(endpoint: string, options: ApiOptions = {}): Promise<T> {
     const { method = "GET", body, token } = options;

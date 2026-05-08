@@ -1,0 +1,14 @@
+npm verbose cli /Users/yigitergun/.nvm/versions/node/v23.5.0/bin/node /Users/yigitergun/.nvm/versions/node/v23.5.0/lib/node_modules/npm/bin/npm-cli.js
+npm info using npm@11.12.1
+npm info using node@v23.5.0
+npm verbose title npm exec next dev
+npm verbose argv "exec" "--loglevel" "verbose" "--" "next" "dev"
+npm verbose logfile logs-max:10 dir:/Users/yigitergun/.npm/_logs/2026-05-08T11_23_04_832Z-
+npm verbose logfile /Users/yigitergun/.npm/_logs/2026-05-08T11_23_04_832Z-debug-0.log
+[?25h
+npm verbose cwd /Users/yigitergun/Desktop/IddaaCustomerPage/frontend
+npm verbose os Darwin 25.4.0
+npm verbose node v23.5.0
+npm verbose npm  v11.12.1
+npm verbose exit 0
+npm info ok

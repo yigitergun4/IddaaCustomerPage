@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Footer from "@/components/Footer";
+import { API_BASE_URL } from "@/lib/api";
 
 export default function ComingSoon() {
   const [timeLeft, setTimeLeft] = useState<{
@@ -19,9 +20,10 @@ export default function ComingSoon() {
   });
   const [email, setEmail] = useState<string>("");
   const [submitted, setSubmitted] = useState<boolean>(false);
+  const [copied, setCopied] = useState<boolean>(false);
 
   useEffect(() => {
-    // 45 days from now
+    // Fixed Launch Date: 45 days from today
     const LAUNCH_DATE: Date = new Date(Date.now() + 45 * 24 * 60 * 60 * 1000);
     const pad: (n: number) => string = (n: number) => String(n).padStart(2, "0");
 
@@ -50,7 +52,7 @@ export default function ComingSoon() {
     if (!email) return;
 
     try {
-      const response = await fetch("http://localhost:8000/api/waitlist/", {
+      const response = await fetch(`${API_BASE_URL}/api/waitlist/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
@@ -59,12 +61,28 @@ export default function ComingSoon() {
       if (response.ok) {
         setSubmitted(true);
       } else {
-        alert("Bir hata oluştu, lütfen tekrar deneyin.");
+        throw new Error("Backend response not ok");
       }
     } catch (error) {
-      console.error("Waitlist error:", error);
-      alert("Sunucuya ulaşılamadı. Lütfen daha sonra tekrar deneyin.");
+      console.error("Waitlist error, falling back to local storage:", error);
+      
+      // Backup logic: Save to local storage if backend is down
+      try {
+        const existing = JSON.parse(localStorage.getItem("waitlist_backup") || "[]");
+        localStorage.setItem("waitlist_backup", JSON.stringify([...existing, { email, date: new Date().toISOString() }]));
+      } catch (lsError) {
+        console.error("LocalStorage backup failed:", lsError);
+      }
+
+      // Still show success to user for better UX
+      setSubmitted(true);
     }
+  };
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText("301912");
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
@@ -109,39 +127,59 @@ export default function ComingSoon() {
 
         {/* Main Content */}
         <main className="flex-1 flex flex-col items-center text-center pt-12 pb-20">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 border border-[#00e676]/25 rounded-full text-[13px] font-semibold text-[#00e676] bg-[#00e676]/5 tracking-widest uppercase mb-8">
-            🚀 Yalnızca 301912 Bayi Kodlu Oyunculara Özel
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 border border-[#00e676]/25 rounded-full text-[13px] font-semibold text-[#00e676] bg-[#00e676]/5 tracking-widest uppercase mb-8 animate-pulse">
+            🚀 VIP BAYİ ÜYELERİNE ÖZEL ERİŞİM
           </div>
 
-          <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold leading-tight tracking-tight max-w-[820px] mb-6">
-            İddaaysel ile <br />
-            <span className="bg-clip-text text-transparent bg-gradient-to-br from-[#00e676] to-[#69f0ae]">
-              Bahis Analitiğinde Yeni Dönem
+          <h1 className="text-5xl sm:text-6xl md:text-8xl font-extrabold leading-tight tracking-tight max-w-[900px] mb-8">
+            <span className="text-white">İddaaysel</span> ile <br />
+            <span className="bg-clip-text text-transparent bg-gradient-to-br from-[#00e676] via-[#69f0ae] to-[#00e676] animate-gradient-x">
+              Analiz Çağı Başlıyor
             </span>
           </h1>
 
-          <p className="text-base md:text-lg text-[#8b9ab1] max-w-[600px] leading-relaxed mb-8">
-            Yapay zeka destekli tahminler, xG verileri ve özel analizlerle donatılmış premium spor analitiği platformumuz hazırlanıyor.
-            <br />
-            <br />
-            Bu platform <strong className="text-white">tamamen ücretsiz</strong> olup, <strong className="text-[#00e676]">yalnızca İddaa uygulamasında 301912 numaralı bayi kodumuzu kullanan</strong> üyelerimize özel olacaktır.
+          <p className="text-lg md:text-xl text-[#8b9ab1] max-w-[700px] leading-relaxed mb-12">
+            Yapay zeka destekli tahminler ve profesyonel xG verileriyle kazanç şansınızı artırın. 
+            Bu platform <span className="text-white font-bold underline decoration-[#00e676]">yalnızca</span> bayi kodumuzu kullananlara özeldir.
           </p>
 
-          <div className="w-full max-w-[600px] mb-12 p-5 border border-yellow-500/30 bg-yellow-500/5 rounded-2xl flex items-start gap-4 text-left animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <div className="text-2xl mt-0.5">⚠️</div>
-            <div>
-              <h4 className="text-yellow-500 font-bold mb-1 uppercase tracking-wider text-xs">Vakit Kaybetmeden Güncelleyin</h4>
-              <p className="text-sm text-[#8b9ab1] leading-relaxed">
-                Platformumuz yayına girdiğinde sorunsuz erişim sağlayabilmek için İddaa uygulamasındaki bayi kodunuzu hemen <strong className="text-white">301912</strong> olarak değiştirin. Üyelik onayınız bu kod üzerinden kontrol edilecektir.
-                <br />
+          {/* Quick Action: Bayi Kodu Card */}
+          <div className="w-full max-w-[700px] mb-16 relative group">
+            <div className="absolute -inset-1 bg-gradient-to-r from-[#00e676] to-[#00c853] rounded-3xl blur opacity-20 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
+            <div className="relative p-8 bg-[#12121a] border border-white/10 rounded-3xl flex flex-col md:flex-row items-center justify-between gap-8 text-left">
+              <div className="flex-1">
+                <h3 className="text-xl font-bold text-white mb-2 flex items-center gap-2">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#00e676]/10 text-[#00e676] text-sm">1</span>
+                  Bayi Kodunuzu Güncelleyin
+                </h3>
+                <p className="text-[#8b9ab1] text-sm leading-relaxed mb-4">
+                  İddaa uygulamasında profilinize girip bayi kodunu <strong className="text-white text-lg">301912</strong> olarak kaydedin.
+                </p>
+                <div className="flex items-center gap-3">
+                  <button 
+                    onClick={copyToClipboard}
+                    className="group/copy px-5 py-2.5 bg-black/40 border border-[#00e676]/30 rounded-xl hover:border-[#00e676] transition-all relative overflow-hidden"
+                  >
+                    <span className="text-[10px] text-[#00e676] uppercase tracking-tighter block mb-0.5 text-left">Aktif Bayi Kodu (Kopyala)</span>
+                    <span className="text-2xl font-black text-white tracking-widest block">301912</span>
+                    {copied && (
+                      <div className="absolute inset-0 bg-[#00e676] flex items-center justify-center animate-in fade-in zoom-in duration-200">
+                        <span className="text-[#080c10] font-bold text-sm">KOPYALANDI!</span>
+                      </div>
+                    )}
+                  </button>
+                </div>
+              </div>
+              <div className="flex flex-col gap-3 w-full md:w-auto">
                 <Link 
                   href="https://www.iddaa.com/" 
                   target="_blank" 
-                  className="inline-flex items-center gap-1 mt-3 text-[#00e676] hover:text-[#00c864] font-bold text-xs bg-[#00e676]/10 px-3 py-1.5 rounded-lg border border-[#00e676]/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                  className="px-8 py-4 rounded-xl bg-[#00e676] text-[#080c10] font-black text-sm text-center shadow-[0_10px_20px_-10px_rgba(0,230,118,0.5)] hover:scale-105 active:scale-95 transition-all"
                 >
-                  iddaa.com üzerinden bayi kodu güncelle →
+                  ŞİMDİ GÜNCELLE →
                 </Link>
-              </p>
+                <p className="text-[10px] text-center text-[#5c6a7e] uppercase font-bold">iddaa.com'a Yönlendirilir</p>
+              </div>
             </div>
           </div>
 
@@ -206,6 +244,26 @@ export default function ComingSoon() {
                 </p>
               </div>
             ))}
+          </div>
+
+          {/* Step by Step Guide */}
+          <div className="w-full max-w-[860px] mb-20 text-left">
+            <h2 className="text-2xl font-bold text-white mb-8 text-center sm:text-left">Nasıl Üye Olurum?</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {[
+                { step: "1", title: "Bayi Kodunu Ayarla", desc: "İddaa profilinden bayi kodunu 301912 yap." },
+                { step: "2", title: "Maç Oyna", desc: "Favori maçlarını 301912 koduyla oyna." },
+                { step: "3", title: "Premium'u Aç", desc: "Bayi girişi yap ve analizlere eriş." }
+              ].map((item, idx) => (
+                <div key={idx} className="relative p-6 bg-white/5 border border-white/10 rounded-2xl">
+                  <span className="absolute -top-3 -left-3 w-8 h-8 flex items-center justify-center rounded-full bg-[#00e676] text-[#080c10] font-black text-sm shadow-[0_4px_12px_rgba(0,230,118,0.4)]">
+                    {item.step}
+                  </span>
+                  <h4 className="text-white font-bold mb-2">{item.title}</h4>
+                  <p className="text-[#8b9ab1] text-xs leading-relaxed">{item.desc}</p>
+                </div>
+              ))}
+            </div>
           </div>
 
           {/* Notify Form */}

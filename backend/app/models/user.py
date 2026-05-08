@@ -10,6 +10,7 @@ class User(Base):
     __tablename__ = "users"
     
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    member_id: Mapped[str | None] = mapped_column(String(50), unique=True, nullable=True, index=True)
     phone: Mapped[str] = mapped_column(String(50), unique=True, nullable=False, index=True)
     active_session_token: Mapped[str | None] = mapped_column(String(500), nullable=True)
     is_verified: Mapped[bool] = mapped_column(Boolean, default=False)

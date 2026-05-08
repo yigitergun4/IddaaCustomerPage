@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 
-export const PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID || "YOUR_PIXEL_ID";
+export const PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID || "977164781706800";
 
 // Global type for Facebook Pixel
 declare global {

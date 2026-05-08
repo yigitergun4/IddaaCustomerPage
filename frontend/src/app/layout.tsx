@@ -34,6 +34,14 @@ export default function RootLayout({
         <Providers>
           <Suspense fallback={null}>
             <MetaPixel />
+            <noscript>
+              <img 
+                height="1" 
+                width="1" 
+                style={{ display: 'none' }}
+                src={`https://www.facebook.com/tr?id=977164781706800&ev=PageView&noscript=1`}
+              />
+            </noscript>
           </Suspense>
           {children}
         </Providers>

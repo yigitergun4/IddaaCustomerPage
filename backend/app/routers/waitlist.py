@@ -24,7 +24,7 @@ async def add_to_waitlist(
         return existing  # Return existing rather than error, for idempotency
     
     # Create new waitlist entry
-    new_entry = WaitlistEmail(email=data.email)
+    new_entry = WaitlistEmail(email=data.email, phone=data.phone)
     db.add(new_entry)
     await db.commit()
     await db.refresh(new_entry)

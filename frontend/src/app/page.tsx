@@ -20,6 +20,7 @@ export default function ComingSoon() {
     secs: "00",
   });
   const [email, setEmail] = useState<string>("");
+  const [phone, setPhone] = useState<string>("");
   const [submitted, setSubmitted] = useState<boolean>(false);
   const [copied, setCopied] = useState<boolean>(false);
 
@@ -57,7 +58,7 @@ export default function ComingSoon() {
       const response = await fetch(`${API_BASE_URL}/api/waitlist/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, phone }),
       });
 
       if (response.ok) {
@@ -71,7 +72,7 @@ export default function ComingSoon() {
       // Backup logic: Save to local storage if backend is down
       try {
         const existing = JSON.parse(localStorage.getItem("waitlist_backup") || "[]");
-        localStorage.setItem("waitlist_backup", JSON.stringify([...existing, { email, date: new Date().toISOString() }]));
+        localStorage.setItem("waitlist_backup", JSON.stringify([...existing, { email, phone, date: new Date().toISOString() }]));
       } catch (lsError) {
         console.error("LocalStorage backup failed:", lsError);
       }
@@ -277,19 +278,32 @@ export default function ComingSoon() {
             {!submitted ? (
               <form
                 onSubmit={handleNotifySubmit}
-                className="flex flex-col sm:flex-row gap-3"
+                className="flex flex-col gap-3"
               >
-                <input
-                  type="email"
-                  required
-                  placeholder="ornek@email.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="flex-1 px-4 py-3.5 rounded-xl border border-white/10 bg-white/5 text-white text-sm outline-none focus:border-[#00e676]/40 transition-colors placeholder:text-[#8b9ab1]"
-                />
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <input
+                    type="email"
+                    required
+                    placeholder="E-posta"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="flex-1 px-4 py-3.5 rounded-xl border border-white/10 bg-white/5 text-white text-sm outline-none focus:border-[#00e676]/40 transition-colors placeholder:text-[#8b9ab1]"
+                  />
+                  <div className="flex-1 flex items-center bg-white/5 border border-white/10 rounded-xl px-4 focus-within:border-[#00e676]/40 transition-colors">
+                    <span className="text-[#00e676] font-bold text-sm mr-2">+90</span>
+                    <input
+                      type="tel"
+                      required
+                      placeholder="5XX XXX XX XX"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      className="flex-1 py-3.5 bg-transparent text-white text-sm outline-none placeholder:text-[#8b9ab1]"
+                    />
+                  </div>
+                </div>
                 <button
                   type="submit"
-                  className="px-6 py-3.5 rounded-xl bg-gradient-to-br from-[#00e676] to-[#00c853] text-[#080c10] text-sm font-bold whitespace-nowrap hover:opacity-90 hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(0,230,118,0.3)] transition-all"
+                  className="w-full px-6 py-4 rounded-xl bg-gradient-to-br from-[#00e676] to-[#00c853] text-[#080c10] text-sm font-bold whitespace-nowrap hover:opacity-90 hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(0,230,118,0.3)] transition-all"
                 >
                   Beni Bildir
                 </button>

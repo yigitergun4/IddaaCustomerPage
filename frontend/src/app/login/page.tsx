@@ -108,8 +108,8 @@ export default function Home() {
                                 <form onSubmit={handleSubmit} className="space-y-8">
                                     <div className="space-y-3">
                                         <div className="flex items-stretch bg-[var(--secondary)] border border-[var(--card-border)] rounded-2xl focus-within:border-[var(--primary)]/60 focus-within:shadow-[0_0_40px_rgba(34,197,94,0.15)] transition-all overflow-hidden group/input">
-                                            <div className="flex items-center px-5 border-r border-[var(--card-border)] bg-[var(--background)]">
-                                                <span className="text-xl font-bold text-[var(--primary)]">0</span>
+                                            <div className="flex items-center px-4 sm:px-5 border-r border-[var(--card-border)] bg-[var(--background)] shrink-0">
+                                                <span className="text-lg sm:text-xl font-bold text-[var(--primary)]">+90</span>
                                             </div>
                                             <input
                                                 id="phone"
@@ -121,7 +121,7 @@ export default function Home() {
                                                     if (val.startsWith("0")) val = val.substring(1);
                                                     setPhone(val.slice(0, 10));
                                                 }}
-                                                className="flex-1 bg-transparent border-none outline-none px-4 py-5 text-xl font-bold text-[var(--foreground)] placeholder:text-[var(--text-subtle)]/30 focus:ring-0"
+                                                className="flex-1 min-w-0 bg-transparent border-none outline-none px-3 sm:px-4 py-4 sm:py-5 text-lg sm:text-xl font-bold text-[var(--foreground)] placeholder:text-[var(--text-subtle)]/30 focus:ring-0"
                                                 placeholder="5XX XXX XX XX"
                                                 disabled={isSubmitting}
                                                 autoFocus

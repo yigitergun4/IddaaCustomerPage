@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Footer from "@/components/Footer";
 import { API_BASE_URL } from "@/lib/api";
+import { trackMetaEvent } from "@/components/MetaPixel";
 
 export default function ComingSoon() {
   const [timeLeft, setTimeLeft] = useState<{
@@ -23,8 +24,9 @@ export default function ComingSoon() {
   const [copied, setCopied] = useState<boolean>(false);
 
   useEffect(() => {
-    // Fixed Launch Date: 45 days from today
-    const LAUNCH_DATE: Date = new Date(Date.now() + 45 * 24 * 60 * 60 * 1000);
+    // Fixed Launch Date: June 22, 2026 (45 days from initial marketing push)
+    // This remains static across refreshes.
+    const LAUNCH_DATE: Date = new Date("2026-06-22T00:00:00");
     const pad: (n: number) => string = (n: number) => String(n).padStart(2, "0");
 
     const tick: () => void = () => {
@@ -174,6 +176,7 @@ export default function ComingSoon() {
                 <Link 
                   href="https://www.iddaa.com/" 
                   target="_blank" 
+                  onClick={() => trackMetaEvent("Lead", { content_name: "Bayi Kodu Güncelleme" })}
                   className="px-8 py-4 rounded-xl bg-[#00e676] text-[#080c10] font-black text-sm text-center shadow-[0_10px_20px_-10px_rgba(0,230,118,0.5)] hover:scale-105 active:scale-95 transition-all"
                 >
                   ŞİMDİ GÜNCELLE →

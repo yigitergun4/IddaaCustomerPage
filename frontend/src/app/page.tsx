@@ -89,18 +89,23 @@ export default function ComingSoon() {
 
   return (
     <div className="relative min-h-screen flex flex-col items-center bg-[#080c10] text-[#e8edf4] font-sans overflow-x-hidden">
-      {/* Background Glow */}
-      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden flex items-center justify-center">
-        <div className="w-[800px] h-[800px] bg-[radial-gradient(circle,rgba(0,230,118,0.08)_0%,transparent_70%)] rounded-full shrink-0" />
+      {/* Noise Texture */}
+      <div className="fixed inset-0 pointer-events-none z-[1] opacity-[0.03] mix-blend-overlay" 
+        style={{ backgroundImage: 'url("https://grainy-gradients.vercel.app/noise.svg")' }} />
+
+      {/* Background Glows */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <div className="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-[#00e676]/10 blur-[120px] rounded-full animate-pulse" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-[#69f0ae]/5 blur-[120px] rounded-full animate-pulse" style={{ animationDelay: '2s' }} />
       </div>
 
       {/* Grid Overlay */}
       <div
-        className="fixed inset-0 pointer-events-none z-0 opacity-50"
+        className="fixed inset-0 pointer-events-none z-0 opacity-[0.15]"
         style={{
           backgroundImage:
-            "linear-gradient(rgba(0,230,118,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,230,118,0.03) 1px, transparent 1px)",
-          backgroundSize: "60px 60px",
+            "radial-gradient(rgba(0,230,118,0.15) 1px, transparent 1px)",
+          backgroundSize: "40px 40px",
         }}
       />
 
@@ -130,40 +135,57 @@ export default function ComingSoon() {
         {/* Main Content */}
         <main className="flex-1 flex flex-col items-center text-center pt-12 pb-20">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 border border-[#00e676]/25 rounded-full text-[13px] font-semibold text-[#00e676] bg-[#00e676]/5 tracking-widest uppercase mb-8 animate-pulse">
-            🚀 VIP BAYİ ÜYELERİNE ÖZEL ERİŞİM
+            🚀 İDDAAYSEL BAYİ ÜYELERİNE ÖZEL ERİŞİM
           </div>
 
-          <h1 className="text-5xl sm:text-6xl md:text-8xl font-extrabold leading-tight tracking-tight max-w-[900px] mb-8">
-            <span className="text-white">İddaaysel</span> ile <br />
-            <span className="bg-clip-text text-transparent bg-gradient-to-br from-[#00e676] via-[#69f0ae] to-[#00e676] animate-gradient-x">
-              Analiz Çağı Başlıyor
+          <h1 className="text-5xl sm:text-7xl md:text-8xl font-black leading-[1.1] tracking-tighter max-w-[950px] mb-10 italic pr-6 sm:pr-10">
+            <span className="text-white drop-shadow-[0_10px_30px_rgba(255,255,255,0.2)]">İDDAAYSEL</span> <br />
+            <span className="bg-clip-text text-transparent bg-gradient-to-br from-[#00e676] via-white to-[#00e676] animate-gradient-x drop-shadow-[0_10px_30px_rgba(0,230,118,0.3)]">
+              ANALİZ ÇAĞI
             </span>
           </h1>
 
-          <p className="text-lg md:text-xl text-[#8b9ab1] max-w-[700px] leading-relaxed mb-12">
-            Yapay zeka destekli tahminler ve profesyonel xG verileriyle kazanç şansınızı artırın. 
-            Bu platform <span className="text-white font-bold underline decoration-[#00e676]">yalnızca</span> bayi kodumuzu kullananlara özeldir.
-          </p>
+          <div className="w-full max-w-[500px] mb-12">
+            <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest text-[#8b9ab1] mb-2">
+              <span>Erken Erişim Doluluk Oranı</span>
+              <span className="text-[#00e676]">84%</span>
+            </div>
+            <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden border border-white/5">
+              <div className="h-full bg-gradient-to-r from-[#00e676] to-[#69f0ae] rounded-full animate-pulse" style={{ width: '84%' }} />
+            </div>
+            <p className="text-[10px] text-[#5c6a7e] mt-2 font-medium">Son 24 saatte 1,240 kişi bayi kodunu güncelledi.</p>
+          </div>
 
-          {/* Quick Action: Bayi Kodu Card */}
-          <div className="w-full max-w-[700px] mb-16 relative group">
-            <div className="absolute -inset-1 bg-gradient-to-r from-[#00e676] to-[#00c853] rounded-3xl blur opacity-20 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
-            <div className="relative p-8 bg-[#12121a] border border-white/10 rounded-3xl flex flex-col md:flex-row items-center justify-between gap-8 text-left">
-              <div className="flex-1">
-                <h3 className="text-xl font-bold text-white mb-2 flex items-center gap-2">
-                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#00e676]/10 text-[#00e676] text-sm">1</span>
-                  Bayi Kodunuzu Güncelleyin
+          <div className="w-full max-w-[850px] mb-20 relative group">
+            <div className="absolute -inset-1 bg-gradient-to-r from-[#00e676] via-[#69f0ae] to-[#00c853] rounded-[2rem] blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-500"></div>
+            <div className="relative p-10 bg-[#0d1117] border border-white/10 rounded-[2rem] flex flex-col md:flex-row items-center justify-between gap-10 text-left overflow-hidden">
+              {/* Subtle Background Pattern for Card */}
+              <div className="absolute top-0 right-0 w-64 h-64 bg-[#00e676]/5 rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none" />
+              
+              <div className="flex-1 relative z-10">
+                <div className="flex items-center gap-2 mb-4">
+                  <span className="px-2 py-0.5 rounded bg-[#00e676]/10 text-[#00e676] text-[10px] font-bold uppercase tracking-widest border border-[#00e676]/20">Gerekli Adım</span>
+                </div>
+                <h3 className="text-2xl sm:text-3xl font-black text-white mb-4 leading-tight">
+                  Bayi Kodunuzu <span className="text-[#00e676]">301912</span> Olarak Güncelleyin
                 </h3>
-                <p className="text-[#8b9ab1] text-sm leading-relaxed mb-4">
-                  İddaa uygulamasında profilinize girip bayi kodunu <strong className="text-white text-lg">301912</strong> olarak kaydedin.
+                <p className="text-[#8b9ab1] text-base leading-relaxed mb-6 max-w-md">
+                  İddaa profilinizde bayi kodunu güncelleyerek, <span className="text-white font-bold">ücretsiz</span> AI analiz paneline sınırsız erişim kazanın.
                 </p>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-4">
                   <button 
                     onClick={copyToClipboard}
-                    className="group/copy px-5 py-2.5 bg-black/40 border border-[#00e676]/30 rounded-xl hover:border-[#00e676] transition-all relative overflow-hidden"
+                    className="group/copy flex items-center gap-4 px-6 py-3 bg-black/40 border border-white/10 rounded-2xl hover:border-[#00e676]/50 transition-all relative overflow-hidden"
                   >
-                    <span className="text-[10px] text-[#00e676] uppercase tracking-tighter block mb-0.5 text-left">Aktif Bayi Kodu (Kopyala)</span>
-                    <span className="text-2xl font-black text-white tracking-widest block">301912</span>
+                    <div>
+                      <span className="text-[10px] text-[#5c6a7e] uppercase font-bold block mb-1">Kodu Kopyala</span>
+                      <span className="text-3xl font-black text-white tracking-[0.2em]">301912</span>
+                    </div>
+                    <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center group-hover/copy:bg-[#00e676]/10 transition-colors">
+                      <svg className="w-5 h-5 text-[#8b9ab1] group-hover/copy:text-[#00e676] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
+                      </svg>
+                    </div>
                     {copied && (
                       <div className="absolute inset-0 bg-[#00e676] flex items-center justify-center animate-in fade-in zoom-in duration-200">
                         <span className="text-[#080c10] font-bold text-sm">KOPYALANDI!</span>
@@ -172,16 +194,23 @@ export default function ComingSoon() {
                   </button>
                 </div>
               </div>
-              <div className="flex flex-col gap-3 w-full md:w-auto">
+
+              <div className="flex flex-col gap-4 w-full md:w-auto relative z-10">
                 <Link 
                   href="https://www.iddaa.com/" 
                   target="_blank" 
                   onClick={() => trackMetaEvent("Lead", { content_name: "Bayi Kodu Güncelleme" })}
-                  className="px-8 py-4 rounded-xl bg-[#00e676] text-[#080c10] font-black text-sm text-center shadow-[0_10px_20px_-10px_rgba(0,230,118,0.5)] hover:scale-105 active:scale-95 transition-all"
+                  className="px-10 py-5 rounded-2xl bg-[#00e676] text-[#080c10] font-black text-base text-center shadow-[0_20px_40px_-10px_rgba(0,230,118,0.4)] hover:scale-[1.05] hover:shadow-[0_25px_50px_-10px_rgba(0,230,118,0.5)] active:scale-95 transition-all flex items-center justify-center gap-2"
                 >
-                  ŞİMDİ GÜNCELLE →
+                  ŞİMDİ GÜNCELLE
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                  </svg>
                 </Link>
-                <p className="text-[10px] text-center text-[#5c6a7e] uppercase font-bold">iddaa.com'a Yönlendirilir</p>
+                <div className="flex items-center justify-center gap-2 text-[11px] text-[#5c6a7e] font-bold uppercase tracking-wider">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#00e676]" />
+                  Resmi iddaa.com Yönlendirmesi
+                </div>
               </div>
             </div>
           </div>
@@ -250,20 +279,22 @@ export default function ComingSoon() {
           </div>
 
           {/* Step by Step Guide */}
-          <div className="w-full max-w-[860px] mb-20 text-left">
-            <h2 className="text-2xl font-bold text-white mb-8 text-center sm:text-left">Nasıl Üye Olurum?</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="w-full max-w-[900px] mb-24">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+              {/* Connector Line for Desktop */}
+              <div className="hidden md:block absolute top-1/2 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-y-8" />
+              
               {[
-                { step: "1", title: "Bayi Kodunu Ayarla", desc: "İddaa profilinden bayi kodunu 301912 yap." },
-                { step: "2", title: "Maç Oyna", desc: "Favori maçlarını 301912 koduyla oyna." },
-                { step: "3", title: "Premium'u Aç", desc: "Bayi girişi yap ve analizlere eriş." }
+                { step: "01", title: "Bayi Kodunu Ayarla", desc: "İddaa profilinden bayi kodunu 301912 yap." },
+                { step: "02", title: "Kuponunu Yap", desc: "Favori maçlarını bu kodla oyna." },
+                { step: "03", title: "Analizleri Kap", desc: "Özel AI panelimize tam erişim sağla." }
               ].map((item, idx) => (
-                <div key={idx} className="relative p-6 bg-white/5 border border-white/10 rounded-2xl">
-                  <span className="absolute -top-3 -left-3 w-8 h-8 flex items-center justify-center rounded-full bg-[#00e676] text-[#080c10] font-black text-sm shadow-[0_4px_12px_rgba(0,230,118,0.4)]">
+                <div key={idx} className="group relative p-8 bg-[#12121a] border border-white/5 rounded-3xl hover:border-[#00e676]/40 transition-all flex flex-col items-center text-center">
+                  <span className="w-12 h-12 flex items-center justify-center rounded-2xl bg-white/5 text-white font-black text-xl mb-6 group-hover:bg-[#00e676] group-hover:text-[#080c10] transition-all duration-500">
                     {item.step}
                   </span>
-                  <h4 className="text-white font-bold mb-2">{item.title}</h4>
-                  <p className="text-[#8b9ab1] text-xs leading-relaxed">{item.desc}</p>
+                  <h4 className="text-white font-black text-lg mb-3 tracking-tight">{item.title}</h4>
+                  <p className="text-[#8b9ab1] text-sm leading-relaxed">{item.desc}</p>
                 </div>
               ))}
             </div>

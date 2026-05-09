@@ -138,7 +138,7 @@ export default function ComingSoon() {
             🚀 İDDAAYSEL BAYİ ÜYELERİNE ÖZEL ERİŞİM
           </div>
 
-          <h1 className="text-5xl sm:text-7xl md:text-8xl font-black leading-[1.1] tracking-tighter max-w-[950px] mb-10 italic pr-6 sm:pr-10">
+          <h1 className="text-5xl sm:text-7xl md:text-8xl font-black leading-[1.1] tracking-tight max-w-[1000px] mb-10 italic pr-12 sm:pr-20 overflow-visible">
             <span className="text-white drop-shadow-[0_10px_30px_rgba(255,255,255,0.2)]">İDDAAYSEL</span> <br />
             <span className="bg-clip-text text-transparent bg-gradient-to-br from-[#00e676] via-white to-[#00e676] animate-gradient-x drop-shadow-[0_10px_30px_rgba(0,230,118,0.3)]">
               ANALİZ ÇAĞI
@@ -153,7 +153,6 @@ export default function ComingSoon() {
             <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden border border-white/5">
               <div className="h-full bg-gradient-to-r from-[#00e676] to-[#69f0ae] rounded-full animate-pulse" style={{ width: '84%' }} />
             </div>
-            <p className="text-[10px] text-[#5c6a7e] mt-2 font-medium">Son 24 saatte 1,240 kişi bayi kodunu güncelledi.</p>
           </div>
 
           <div className="w-full max-w-[850px] mb-20 relative group">

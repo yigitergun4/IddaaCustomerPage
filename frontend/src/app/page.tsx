@@ -138,10 +138,10 @@ export default function ComingSoon() {
             🚀 İDDAAYSEL BAYİ ÜYELERİNE ÖZEL ERİŞİM
           </div>
 
-          <h1 className="text-5xl sm:text-7xl md:text-8xl font-black leading-[1.1] tracking-tight max-w-[1000px] mb-10 italic pr-12 sm:pr-20 overflow-visible">
+          <h1 className="text-5xl sm:text-7xl md:text-8xl font-black leading-[1.1] tracking-normal max-w-[1000px] mb-10 pr-10 overflow-visible" style={{ transform: 'skewX(-10deg)' }}>
             <span className="text-white drop-shadow-[0_10px_30px_rgba(255,255,255,0.2)]">İDDAAYSEL</span> <br />
             <span className="bg-clip-text text-transparent bg-gradient-to-br from-[#00e676] via-white to-[#00e676] animate-gradient-x drop-shadow-[0_10px_30px_rgba(0,230,118,0.3)]">
-              ANALİZ ÇAĞI
+              ANALİZ ÇAĞI&nbsp;
             </span>
           </h1>
 
